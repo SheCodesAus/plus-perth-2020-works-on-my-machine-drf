@@ -15,7 +15,7 @@ class CustomUserList(APIView):
     def post(self, request):
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
-        serializer.save()
+            serializer.save()
         return Response(serializer.data)
         return Response(serializer.errors)
 
@@ -30,4 +30,3 @@ class CustomUserDetail(APIView):
         user = self.get_object(pk)
         serializer = CustomUserSerializer(user)
         return Response(serializer.data)
-        
