@@ -14,16 +14,28 @@ def get_events(url):
         creator_email = event.organizer.email
         creator = CustomUser.objects.get(email=creator_email)
         creator_id = creator.pk
-        start = event.begin.date()
-        end = event.end.date()
+        start_date = event.begin.date()
+        start = event.begin.datetime
+        end = event.end.datetime
 
-        if start > now:
-            event, created = Event.objects.get_or_create(
+        if start_date > now:
+            mentors = []
+            for mentor in event.attendees:
+                
+                mentor_email = mentor.email
+                mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
+                mentor_id = mentor_obj.pk
+                mentors.append(mentor_id)
+            event, created = Event.objects.update_or_create(
                 id=event.uid,
-                creator = creator_id,
-                event_start=start,
-                event_end=end,
-                event_name=event.name,
+                defaults = {
+                    "creator": creator,
+                    "event_start": start,
+                    "event_end": end,
+                    "event_name": event.name,
+                }
             )
+            event.mentor_list.set(mentors)
+            event.save()
             events.append(event)
     return events

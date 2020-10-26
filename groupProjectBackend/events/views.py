@@ -16,7 +16,15 @@ class AddCalendar(APIView):
                 serializer.data,
                 status=status.HTTP_201_CREATED
             )   
-        
+
+class EventList(APIView):
+    def get(self, request):
+        events = Event.objects.all()
+        serializer = EventListSerializer(events, many=True)
+        return Response(serializer.data)
+
+
+
 class Events(APIView):
     def get(self, request):
         events = Event.objects.all()

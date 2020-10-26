@@ -8,12 +8,17 @@ class Event(models.Model):
         on_delete=models.CASCADE,
         related_name='event'
     )
-    # event_city = models.CharField(max_length=200)
+    event_city = models.CharField(max_length=200)
     event_name = models.CharField(max_length=200)
-    # event_type = models.CharField(max_length=200)
+    event_type = models.CharField(max_length=200)
     event_start = models.DateTimeField(max_length=200)
     event_end = models.DateTimeField(max_length=200)
-    # event_location = models.CharField(max_length=200)
+    event_location = models.CharField(max_length=200)
+    mentor_list = models.ManyToManyField(
+        "mentors.MentorProfile",
+        related_name="event_attending",
+        related_query_name="mentor_attending"
+    )
 
 
 class CalendarUrl(models.Model):
