@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
     'mentors.apps.MentorsConfig', 
+    'events.apps.EventsConfig',
 ]
 
 REST_FRAMEWORK = {
