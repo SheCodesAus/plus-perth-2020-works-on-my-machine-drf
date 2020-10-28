@@ -13,9 +13,10 @@ class MentorProfile(models.Model):
 
 class MentorProcess(models.Model):
     mentor_name = models.OneToOneField(
-        MentorProfile, 
-        on_delete=models.CASCADE, 
-        related_name="mentor_process")
+        MentorProfile,
+        related_name='mentor', 
+        on_delete=models.CASCADE 
+        )
     step_one = models.BooleanField()
     step_two = models.BooleanField()
     step_three = models.BooleanField()
