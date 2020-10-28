@@ -10,7 +10,7 @@ class CustomUserSerializer(serializers.Serializer):
     user_type = serializers.CharField(max_length=200)
     
     def create(self, validated_data):
-        return CustomUser.objects.create(**validated_data)
+        return CustomUser.objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
         instance.user_type = validated_data.get('user_type', instance.user_type)
