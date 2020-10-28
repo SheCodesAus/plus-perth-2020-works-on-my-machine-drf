@@ -22,15 +22,7 @@ class EventList(APIView):
         events = Event.objects.all()
         serializer = EventListSerializer(events, many=True)
         return Response(serializer.data)
-
-
-
-class Events(APIView):
-    def get(self, request):
-        events = Event.objects.all()
-        serializer = EventListSerializer(events, many=True)
-        return Response(serializer.data)
-
+    
     def post(self, request, *args, **kwargs):
         url = CalendarUrl.objects.get(pk=1).calendar_url
         events = get_events(url)
@@ -40,3 +32,27 @@ class Events(APIView):
             status=status.HTTP_201_CREATED
         )
 
+class EventDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Event.objects.get(pk=pk)
+        except Event.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        event = self.get_object(pk)
+        serializer = EventListSerializer(event)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        event = self.get_object(pk)
+        serializer = EventListSerializer(event, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        event= self.get_object(pk)
+        event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -17,6 +17,7 @@ def get_events(url):
         start_date = event.begin.date()
         start = event.begin.datetime
         end = event.end.datetime
+        all_day = event.all_day
 
         if start_date > now:
             mentors = []
@@ -33,6 +34,8 @@ def get_events(url):
                     "event_start": start,
                     "event_end": end,
                     "event_name": event.name,
+                    "event_location": event.location,
+                    "all_day": event.all_day
                 }
             )
             event.mentor_list.set(mentors)

@@ -25,6 +25,7 @@ class EventListSerializer(serializers.Serializer):
     event_start = serializers.DateTimeField()
     event_end = serializers.DateTimeField()
     event_location = serializers.CharField(max_length=200)
+    all_day = serializers.BooleanField()
     mentor_list = serializers.SlugRelatedField(many=True, slug_field="mentor_name", queryset=MentorProfile.objects.all())
 
     # def create(self, validated_data):

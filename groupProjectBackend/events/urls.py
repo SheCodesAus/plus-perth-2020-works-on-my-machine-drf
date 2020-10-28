@@ -4,7 +4,8 @@ from . import views
 
 urlpatterns = [
     path('calendar-url/', views.AddCalendar.as_view()),
-    path('events/', views.Events.as_view()),
+    path('events/', views.EventList.as_view()),
+    path('events/<str:pk>/', views.EventDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
