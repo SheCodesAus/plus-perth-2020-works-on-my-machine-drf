@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class MentorProfile(models.Model):
     mentor_name = models.CharField(max_length=200)
@@ -10,8 +12,11 @@ class MentorProfile(models.Model):
     one_day_workshop = models.BooleanField()
 
 class MentorProcess(models.Model):
-    mentor_name = models.ForeignKey(
-        MentorProfile, related_name='mentor', on_delete=models.CASCADE)
+    mentor_name = models.OneToOneField(
+        MentorProfile,
+        related_name='mentor', 
+        on_delete=models.CASCADE 
+        )
     step_one = models.BooleanField()
     step_two = models.BooleanField()
     step_three = models.BooleanField()
@@ -20,3 +25,8 @@ class MentorProcess(models.Model):
     step_six = models.BooleanField()
     step_seven = models.BooleanField()
     step_eight = models.BooleanField()
+
+@receiver(post_save, sender=MentorProfile)
+def create_related_process(sender, instance, created, *args, **kwargs):
+    if instance and created:
+        UserProcess.objects.create(mentor_name=instance)
