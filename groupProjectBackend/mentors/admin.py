@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import MentorProfile, MentorProcess
 
-# Register your models here.
+admin.site.register(MentorProcess)
+admin.site.register(MentorProfile)
