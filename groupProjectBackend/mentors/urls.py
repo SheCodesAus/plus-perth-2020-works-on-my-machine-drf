@@ -5,4 +5,5 @@ from . import views
 urlpatterns = [
 path('mentors/', views.MentorList.as_view()),
 ]
+
 urlpatterns = format_suffix_patterns(urlpatterns)

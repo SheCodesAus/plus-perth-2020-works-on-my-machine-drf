@@ -12,21 +12,21 @@ class MentorProfile(models.Model):
     one_day_workshop = models.BooleanField()
 
 class MentorProcess(models.Model):
-    mentor_name = models.OneToOneField(
+    mentor_name = models.ForeignKey(
         MentorProfile,
         related_name='mentor', 
         on_delete=models.CASCADE 
         )
-    step_one = models.BooleanField()
-    step_two = models.BooleanField()
-    step_three = models.BooleanField()
-    step_four = models.BooleanField()
-    step_five = models.BooleanField()
-    step_six = models.BooleanField()
-    step_seven = models.BooleanField()
-    step_eight = models.BooleanField()
+    interview = models.BooleanField()
+    offer_position = models.BooleanField()
+    send_contract = models.BooleanField()
+    signed_contract = models.BooleanField()
+    calendar_invites = models.BooleanField()
+    onboarding = models.BooleanField()
+    feedback = models.BooleanField()
+    offboarding = models.BooleanField()
 
 @receiver(post_save, sender=MentorProfile)
 def create_related_process(sender, instance, created, *args, **kwargs):
     if instance and created:
-        UserProcess.objects.create(mentor_name=instance)
+        MentorProcess.objects.create(mentor_name=instance)
