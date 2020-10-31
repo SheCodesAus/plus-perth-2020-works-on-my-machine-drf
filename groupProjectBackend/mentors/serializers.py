@@ -57,28 +57,57 @@ class MentorProcessSerializer(serializers.ModelSerializer):
             "onboarding",
             "feedback",
             "offboarding",
+            "interview_created",
+            "offer_position_created",
+            "send_contract_created",
+            "signed_contract_created",
+            "calendar_invites_created",
+            "onboarding_created",
+            "feedback_created",
+            "offboarding_created",
         ]
-
-    # def create(self, validated_data):
-    #     return MentorProcess.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.interview = validated_data.get("interview", instance.interview)
+        instance.interview_created = validated_data.get(
+            "interview_created", instance.interview_created
+        )
         instance.offer_position = validated_data.get(
             "offer_position", instance.offer_position
+        )
+        instance.offer_position_created = validated_data.get(
+            "offer_position_created", instance.offer_position_created
         )
         instance.send_contract = validated_data.get(
             "send_contract", instance.send_contract
         )
+        instance.send_contract_created = validated_data.get(
+            "send_contract_created", instance.send_contract_created
+        )
         instance.signed_contract = validated_data.get(
             "signed_contract", instance.signed_contract
+        )
+        instance.signed_contract_created = validated_data.get(
+            "signed_contract_created", instance.signed_contract_created
         )
         instance.calendar_invites = validated_data.get(
             "calendar_invites", instance.calendar_invites
         )
+        instance.calendar_invites_created = validated_data.get(
+            "calendar_invites_created", instance.calendar_invites_created
+        )
         instance.onboarding = validated_data.get("onboarding", instance.onboarding)
+        instance.onboarding_created = validated_data.get(
+            "onboarding_created", instance.onboarding_created
+        )
         instance.feedback = validated_data.get("feedback", instance.feedback)
+        instance.feedback_created = validated_data.get(
+            "feedback_created", instance.feedback_created
+        )
         instance.offboarding = validated_data.get("offboarding", instance.offboarding)
+        instance.offboarding_created = validated_data.get(
+            "offboarding_created", instance.offboarding_created
+        )
         instance.save()
         return instance
 
