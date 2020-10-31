@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class MentorProfile(models.Model):
     mentor_name = models.CharField(max_length=200)
     mentor_email = models.CharField(max_length=200)
@@ -10,6 +11,7 @@ class MentorProfile(models.Model):
     skills = models.CharField(max_length=200)
     mentor_type = models.CharField(max_length=200)
     one_day_workshop = models.BooleanField()
+
 
 class MentorProcess(models.Model):
     mentor_name = models.ForeignKey(
@@ -33,7 +35,7 @@ class MentorProcess(models.Model):
     feedback_created = models.DateTimeField(auto_now=True)
     offboarding = models.BooleanField(default=False)
     offboarding_created = models.DateTimeField(auto_now=True)
-
+ 
 @receiver(post_save, sender=MentorProfile)
 def create_related_process(sender, instance, created, *args, **kwargs):
     if instance and created:
