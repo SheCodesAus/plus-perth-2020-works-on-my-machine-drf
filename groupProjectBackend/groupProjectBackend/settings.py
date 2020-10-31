@@ -77,9 +77,11 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "q7kuF28-qWz6RIY5UQMkPoB_"
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "https://www.googleapis.com/auth/calendar",
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/userinfo.profile",
-    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.readonly",
+    "openid",
 ]
 
 AUTH_USER_MODEL = "users.CustomUser"

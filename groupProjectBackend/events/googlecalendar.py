@@ -26,12 +26,6 @@ def getCalendarEvents(credentials):
     )
     events = events_result.get("items", [])
 
-    # if not events:
-    #     print("No upcoming events found.")
-    # for event in events:
-    #     start = event["start"].get("dateTime", event["start"].get("date"))
-    #     print(start, event["summary"])
-
     if not events:
         print("No upcoming events found.")
     for event in events:
@@ -40,12 +34,12 @@ def getCalendarEvents(credentials):
         end = event["end"].get("dateTime", event["end"].get("date"))
         name = event["summary"]
         location = event.get("location")
-        # mentors = []
+        mentors = []
 
-        # for mentor in event["attendees"]:
-        #     mentor_email = mentor.get("email")
-        #     mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
-        #     mentor_id = mentor_obj.pk
-        #     mentors.append(mentor_id)
+        for mentor in event["attendees"]:
+            mentor_email = mentor.get("email")
+            mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
+            mentor_id = mentor_obj.pk
+            mentors.append(mentor_id)
 
         print(creator_email, start, end, name, location)
