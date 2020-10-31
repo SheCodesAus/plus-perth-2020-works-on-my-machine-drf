@@ -14,8 +14,8 @@ class MentorProfile(models.Model):
 
 
 class MentorProcess(models.Model):
-    mentor = models.OneToOneField(
-        MentorProfile, related_name="process", on_delete=models.CASCADE
+    mentor_name = models.ForeignKey(
+        MentorProfile, related_name="mentor", on_delete=models.CASCADE
     )
     interview = models.BooleanField(default=False)
     interview_completed = models.DateTimeField(null=True, blank=True)
