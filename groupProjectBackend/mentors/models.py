@@ -15,27 +15,26 @@ class MentorProfile(models.Model):
 
 class MentorProcess(models.Model):
     mentor_name = models.ForeignKey(
-        MentorProfile,
-        related_name='mentor', 
-        on_delete=models.CASCADE 
-        )
+        MentorProfile, related_name="mentor", on_delete=models.CASCADE
+    )
     interview = models.BooleanField(default=False)
-    interview_created = models.DateTimeField(auto_now=True)
+    interview_completed = models.DateTimeField(null=True, blank=True)
     offer_position = models.BooleanField(default=False)
-    offer_position_created = models.DateTimeField(auto_now=True)
+    offer_position_completed = models.DateTimeField(null=True, blank=True)
     send_contract = models.BooleanField(default=False)
-    send_contract_created = models.DateTimeField(auto_now=True)
+    send_contract_completed = models.DateTimeField(null=True, blank=True)
     signed_contract = models.BooleanField(default=False)
-    signed_contract_created = models.DateTimeField(auto_now=True)
+    signed_contract_completed = models.DateTimeField(null=True, blank=True)
     calendar_invites = models.BooleanField(default=False)
-    calendar_invites_created = models.DateTimeField(auto_now=True)
+    calendar_invites_completed = models.DateTimeField(null=True, blank=True)
     onboarding = models.BooleanField(default=False)
-    onboarding_created = models.DateTimeField(auto_now=True)
+    onboarding_completed = models.DateTimeField(null=True, blank=True)
     feedback = models.BooleanField(default=False)
-    feedback_created = models.DateTimeField(auto_now=True)
+    feedback_completed = models.DateTimeField(null=True, blank=True)
     offboarding = models.BooleanField(default=False)
-    offboarding_created = models.DateTimeField(auto_now=True)
- 
+    offboarding_completed = models.DateTimeField(null=True, blank=True)
+
+
 @receiver(post_save, sender=MentorProfile)
 def create_related_process(sender, instance, created, *args, **kwargs):
     if instance and created:
