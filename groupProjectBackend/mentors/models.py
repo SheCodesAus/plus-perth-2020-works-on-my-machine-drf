@@ -15,7 +15,7 @@ class MentorProfile(models.Model):
 
 class MentorProcess(models.Model):
     mentor_name = models.ForeignKey(
-        MentorProfile, related_name="mentor", on_delete=models.CASCADE
+        MentorProfile, related_name="process", on_delete=models.CASCADE
     )
     interview = models.BooleanField(default=False)
     interview_completed = models.DateTimeField(null=True, blank=True)
@@ -38,4 +38,4 @@ class MentorProcess(models.Model):
 @receiver(post_save, sender=MentorProfile)
 def create_related_process(sender, instance, created, *args, **kwargs):
     if instance and created:
-        MentorProcess.objects.create(mentor=instance)
+        MentorProcess.objects.create(mentor_name=instance)
