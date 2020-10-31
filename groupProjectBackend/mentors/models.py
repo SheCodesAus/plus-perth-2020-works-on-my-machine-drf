@@ -37,4 +37,4 @@ class MentorProcess(models.Model):
 @receiver(post_save, sender=MentorProfile)
 def create_related_process(sender, instance, created, *args, **kwargs):
     if instance and created:
-        MentorProcess.objects.create(mentor_name=instance)
+        MentorProcess.objects.create(mentor=instance)

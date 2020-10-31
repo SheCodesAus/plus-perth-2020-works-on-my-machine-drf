@@ -22,7 +22,7 @@ class MentorProfileSerializer(serializers.ModelSerializer):
         instance.skills = validated_data.get('skills', instance.skills)
         instance.mentor_type = validated_data.get('mentor_type', instance.mentor_type)
         instance.one_day_workshop = validated_data.get('one_day_workshop', instance.one_day_workshop)
-
+        
     def delete(self, validated_data):
         return MentorProfile.objects.delete(**validated_data)
 
