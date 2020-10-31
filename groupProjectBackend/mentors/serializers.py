@@ -33,7 +33,7 @@ class MentorProcessSerializer(serializers.ModelSerializer):
     class Meta:
             model = MentorProcess
             fields = ['id', 
-            'mentor_name',
+            'mentor',
             'interview',
             'offer_position',
             'send_contract',
