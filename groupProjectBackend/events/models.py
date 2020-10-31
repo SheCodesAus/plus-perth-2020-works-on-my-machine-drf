@@ -12,7 +12,7 @@ class Event(models.Model):
     event_type = models.CharField(max_length=200)
     event_start = models.DateTimeField(max_length=200)
     event_end = models.DateTimeField(max_length=200)
-    event_location = models.CharField(max_length=200)
+    event_location = models.CharField(max_length=200, null=True, blank=True)
     all_day = models.BooleanField(default=False)
     mentor_list = models.ManyToManyField(
         "mentors.MentorProfile",

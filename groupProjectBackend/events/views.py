@@ -1,4 +1,4 @@
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from rest_framework import status, permissions, generics
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import Event, CalendarUrl
 from .serializers import CalendarUrlSerializer, EventListSerializer
 from .calendarscript import get_events
-from .googlecalendar import getCalendarEvents
+from .googlecalendar import getCalendarEvents, createEvent
 
 
 class AddCalendar(APIView):
@@ -33,11 +33,16 @@ class EventList(APIView):
         credentials = request.session["credentials"]
         # test_api_request(credentials)
         events = getCalendarEvents(credentials)
-        # serializer = EventListSerializer(events, many=True)
-        return Response(
-            # serializer.data,
-            status=status.HTTP_201_CREATED
-        )
+        serializer = EventListSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CreateEvent(APIView):
+    def post(self, request):
+        credentials = request.session["credentials"]
+        print(request.data)
+        createEvent(credentials, request.data)
+        return HttpResponseRedirect("/events")
 
 
 class EventDetail(APIView):
