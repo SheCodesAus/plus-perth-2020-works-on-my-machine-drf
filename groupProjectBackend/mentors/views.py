@@ -8,14 +8,6 @@ from django.http import Http404
 from rest_framework import status, generics, permissions
 from rest_framework.permissions import BasePermission, IsAuthenticatedOrReadOnly, SAFE_METHODS
 
-class MentorProfileList(APIView):
-
-    def get(self, request):
-        mentors = MentorProfile.objects.all()
-        serializer = MentorProfileSerializer(mentors, many=True)
-        return Response(serializer.data)
-
-
 class MentorProcessDetail(generics.RetrieveUpdateDestroyAPIView):
 #   permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = MentorProcess.objects.all() 
@@ -25,3 +17,13 @@ class MentorProcessList(generics.ListCreateAPIView):
 #    permission_classes = [IsAuthenticatedOrReadOnly]
      queryset = MentorProcess.objects.all()
      serializer_class = MentorProcessSerializer
+
+class MentorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+#   permission_classes = [IsAuthenticatedOrReadOnly]
+     queryset = MentorProfile.objects.all()
+     serializer_class = MentorProfileSerializer
+
+class MentorProfileList(generics.ListCreateAPIView):
+#    permission_classes = [IsAuthenticatedOrReadOnly]
+     queryset = MentorProfile.objects.all()
+     serializer_class = MentorProfileSerializer
