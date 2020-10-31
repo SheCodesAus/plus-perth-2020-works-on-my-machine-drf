@@ -50,13 +50,21 @@ class MentorProcessSerializer(serializers.ModelSerializer):
             "id",
             "mentor",
             "interview",
+            "interview_completed",
             "offer_position",
+            "offer_position_completed",
             "send_contract",
+            "send_contract_completed",
             "signed_contract",
+            "signed_contract_completed",
             "calendar_invites",
+            "calendar_invites_completed",
             "onboarding",
+            "onboarding_completed",
             "feedback",
+            "feedback_completed",
             "offboarding",
+            "offboarding_completed",
         ]
 
     # def create(self, validated_data):
@@ -64,21 +72,52 @@ class MentorProcessSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.interview = validated_data.get("interview", instance.interview)
+        instance.interview_completed = validated_data.get(
+            "interview_completed", instance.interview_completed
+        )
+
         instance.offer_position = validated_data.get(
             "offer_position", instance.offer_position
         )
+        instance.offer_position_completed = validated_data.get(
+            "offer_position_completed", instance.offer_position_completed
+        )
+
         instance.send_contract = validated_data.get(
             "send_contract", instance.send_contract
         )
+        instance.send_contract_completed = validated_data.get(
+            "send_contract_completed", instance.send_contract_completed
+        )
+
         instance.signed_contract = validated_data.get(
             "signed_contract", instance.signed_contract
         )
+        instance.signed_contract_completed = validated_data.get(
+            "signed_contract_completed", instance.signed_contract_completed
+        )
+
         instance.calendar_invites = validated_data.get(
             "calendar_invites", instance.calendar_invites
         )
+        instance.calendar_invites_completed = validated_data.get(
+            "calendar_invites_completed", instance.calendar_invites_completed
+        )
+
         instance.onboarding = validated_data.get("onboarding", instance.onboarding)
+        instance.onboarding_completed = validated_data.get(
+            "onboarding_completed", instance.onboarding_completed
+        )
+
         instance.feedback = validated_data.get("feedback", instance.feedback)
+        instance.feedback_completed = validated_data.get(
+            "feedback_completed", instance.feedback_completed
+        )
+
         instance.offboarding = validated_data.get("offboarding", instance.offboarding)
+        instance.offboarding_completed = validated_data.get(
+            "offboarding_completed", instance.offboarding_completed
+        )
         instance.save()
         return instance
 

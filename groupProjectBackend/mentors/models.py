@@ -18,13 +18,21 @@ class MentorProcess(models.Model):
         MentorProfile, related_name="process", on_delete=models.CASCADE
     )
     interview = models.BooleanField(default=False)
+    interview_completed = models.DateTimeField(null=True, blank=True)
     offer_position = models.BooleanField(default=False)
+    offer_position_completed = models.DateTimeField(null=True, blank=True)
     send_contract = models.BooleanField(default=False)
+    send_contract_completed = models.DateTimeField(null=True, blank=True)
     signed_contract = models.BooleanField(default=False)
+    signed_contract_completed = models.DateTimeField(null=True, blank=True)
     calendar_invites = models.BooleanField(default=False)
+    calendar_invites_completed = models.DateTimeField(null=True, blank=True)
     onboarding = models.BooleanField(default=False)
+    onboarding_completed = models.DateTimeField(null=True, blank=True)
     feedback = models.BooleanField(default=False)
+    feedback_completed = models.DateTimeField(null=True, blank=True)
     offboarding = models.BooleanField(default=False)
+    offboarding_completed = models.DateTimeField(null=True, blank=True)
 
 
 @receiver(post_save, sender=MentorProfile)
