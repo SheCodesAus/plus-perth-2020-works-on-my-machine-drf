@@ -54,17 +54,14 @@ class EventDetail(APIView):
 
     def get(self, request, pk):
         event = self.get_object(pk)
-        serializer = EventListSerializer()
+        serializer = EventListSerializer(event)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
+    def post(self, request, pk, format=None):
         credentials = request.session["credentials"]
-        event = update_event(credentials, request.data, pk)
-        serializer = EventListSerializer(data=event, partial=True)
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        update_event(credentials, request.data, pk)
+        url = f"/events/{pk}/"
+        return HttpResponseRedirect(url)
 
     def delete(self, request, pk, format=None):
         event = self.get_object(pk)

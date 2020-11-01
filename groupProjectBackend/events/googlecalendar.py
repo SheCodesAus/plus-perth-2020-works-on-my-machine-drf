@@ -4,6 +4,20 @@ import datetime
 from .models import Event
 from mentors.models import MentorProfile
 from users.models import CustomUser
+import re
+
+
+def find_event_city(location):
+    if location is not None:
+        postcode = re.findall("(6|3)[0-9]{3}", location)
+        if postcode[0] == "6":
+            return "Perth"
+        elif postcode[0] == "4":
+            return "Brisbane"
+        else:
+            return None
+    else:
+        return None
 
 
 def create_event_model(event):
@@ -11,6 +25,7 @@ def create_event_model(event):
     end = event["end"].get("dateTime", event["end"].get("date"))
     name = event["summary"]
     location = event.get("location")
+    city = find_event_city(location)
     event_id = event.get("id")
     creator_email = event["creator"].get("email")
     mentors = []
@@ -22,8 +37,6 @@ def create_event_model(event):
             mentor_id = mentor_obj.pk
             mentors.append(mentor_obj)
 
-    print(creator_email, start, end, name, location, mentors)
-
     event_model, created = Event.objects.update_or_create(
         id=event_id,
         defaults={
@@ -32,6 +45,7 @@ def create_event_model(event):
             "event_end": end,
             "event_name": name,
             "event_location": location,
+            "event_city": city,
             "all_day": False,
         },
     )
@@ -88,7 +102,6 @@ def create_event(credentials, data):
         "location": data["event_location"],
         "attendees": mentors,
     }
-    print(event)
 
     calendar = build("calendar", "v3", credentials=creds)
     event = (
@@ -128,7 +141,10 @@ def update_event(credentials, data, eventId):
             mentor_email = mentor_obj.mentor_email
             mentors.append({"email": mentor_email})
         event["attendees"] = mentors
+    updated_event = (
+        calendar.events()
+        .update(calendarId="primary", eventId=event["id"], body=event)
+        .execute()
+    )
 
-    updated_event = calendar.events().update(calendarId="primary", eventId=event["id"])
-
-    return event
+    return create_event_model(event)
