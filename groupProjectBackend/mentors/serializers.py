@@ -67,9 +67,6 @@ class MentorProcessSerializer(serializers.ModelSerializer):
             "offboarding_completed",
         ]
 
-    # def create(self, validated_data):
-    #     return MentorProcess.objects.create(**validated_data)
-
     def update(self, instance, validated_data):
         instance.interview = validated_data.get("interview", instance.interview)
         instance.interview_completed = validated_data.get(
