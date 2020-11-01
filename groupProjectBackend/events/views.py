@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import Event, CalendarUrl
 from .serializers import CalendarUrlSerializer, EventListSerializer
 from .calendarscript import get_events
-from .googlecalendar import get_calendar_events, create_event
+from .googlecalendar import get_calendar_events, create_event, update_event
 
 
 class AddCalendar(APIView):
@@ -54,16 +54,17 @@ class EventDetail(APIView):
 
     def get(self, request, pk):
         event = self.get_object(pk)
-        serializer = EventListSerializer(event)
+        serializer = EventListSerializer()
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        event = self.get_object(pk)
-        serializer = EventListSerializer(event, data=request.data)
+        credentials = request.session["credentials"]
+        event = update_event(credentials, request.data, pk)
+        serializer = EventListSerializer(data=event, partial=True)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         event = self.get_object(pk)

@@ -78,10 +78,8 @@ def create_event(credentials, data):
 
     for mentor in data["mentor_list"]:
         mentor_obj = MentorProfile.objects.get(pk=mentor)
-        # breakpoint()
         mentor_email = mentor_obj.mentor_email
         mentors.append({"email": mentor_email})
-        # breakpoint()
 
     event = {
         "summary": data["event_name"],
@@ -100,3 +98,37 @@ def create_event(credentials, data):
     )
 
     return get_calendar_events(credentials)
+
+
+def update_event(credentials, data, eventId):
+    credentials = google.oauth2.credentials.Credentials(**credentials)
+
+    calendar = build("calendar", "v3", credentials=credentials)
+    event = calendar.events().get(calendarId="primary", eventId=eventId).execute()
+
+    if "event_name" in data:
+        event["summary"] = data["event_name"]
+
+    if "event_start" in data:
+        event["start"] = {
+            "dateTime": data["event_start"],
+            "timeZone": "Australia/Perth",
+        }
+
+    if "event_end" in data:
+        event["end"] = {"dateTime": data["event_end"], "timeZone": "Australia/Perth"}
+
+    if "event_location" in data:
+        event["location"] = data["event_location"]
+
+    if "mentor_list" in data:
+        mentors = []
+        for mentor in data["mentor_list"]:
+            mentor_obj = MentorProfile.objects.get(pk=mentor)
+            mentor_email = mentor_obj.mentor_email
+            mentors.append({"email": mentor_email})
+        event["attendees"] = mentors
+
+    updated_event = calendar.events().update(calendarId="primary", eventId=event["id"])
+
+    return event
