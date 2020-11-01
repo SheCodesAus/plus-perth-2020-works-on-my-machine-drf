@@ -29,12 +29,12 @@ def getCalendarEvents(credentials):
     if not events:
         print("No upcoming events found.")
     for event in events:
-        creator_email = event["creator"].get("email")
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
         name = event["summary"]
         location = event.get("location")
         event_id = event.get("id")
+        creator_email = event["creator"].get("email")
         mentors = []
 
         if "attendees" in event:
@@ -42,7 +42,7 @@ def getCalendarEvents(credentials):
                 mentor_email = mentor.get("email")
                 mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
                 mentor_id = mentor_obj.pk
-                mentors.append(mentor_id)
+                mentors.append(mentor_obj)
 
         print(creator_email, start, end, name, location, mentors)
 
@@ -64,22 +64,30 @@ def getCalendarEvents(credentials):
 
 
 def createEvent(credentials, data):
-    credentials = google.oauth2.credentials.Credentials(**credentials)
-
+    creds = google.oauth2.credentials.Credentials(**credentials)
     mentors = []
 
-    for mentor in data.mentor_list:
+    for mentor in data["mentor_list"]:
         mentor_obj = MentorProfile.objects.get(pk=mentor)
-        mentor_email = mentor_obj.email
-        mentors.append(mentor_email)
+        # breakpoint()
+        mentor_email = mentor_obj.mentor_email
+        mentors.append({"email": mentor_email})
+        # breakpoint()
 
     event = {
-        "summary": data.name,
-        "start": {"dateTime": data.event_start, "timeZone": "Australia/Perth"},
-        "end": {"dateTime": data.event_end, "timeZone": "Australia/Perth"},
-        "location": data.event_location,
+        "summary": data["event_name"],
+        "start": {"dateTime": data["event_start"], "timeZone": "Australia/Perth"},
+        "end": {"dateTime": data["event_end"], "timeZone": "Australia/Perth"},
+        "location": data["event_location"],
         "attendees": mentors,
     }
+    print(event)
 
-    calendar = build("calendar", "v3", credentials=credentials)
-    event = service.events().insert(calendarId="primary", body=event).execute()
+    calendar = build("calendar", "v3", credentials=creds)
+    event = (
+        calendar.events()
+        .insert(calendarId="primary", body=event, sendUpdates="all")
+        .execute()
+    )
+
+    return getCalendarEvents(credentials)
