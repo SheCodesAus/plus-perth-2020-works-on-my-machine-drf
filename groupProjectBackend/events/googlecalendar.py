@@ -73,6 +73,7 @@ def get_calendar_events(credentials):
         .execute()
     )
     events = events_result.get("items", [])
+    print(events)
     event_list = []
 
     if not events:
@@ -148,3 +149,11 @@ def update_event(credentials, data, eventId):
     )
 
     return create_event_model(event)
+
+
+def delete_event(credentials, eventId):
+    creds = google.oauth2.credentials.Credentials(**credentials)
+    calendar = build("calendar", "v3", credentials=creds)
+    calendar.events().delete(calendarId="primary", eventId=eventId).execute()
+
+    return

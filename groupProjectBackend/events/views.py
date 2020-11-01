@@ -6,7 +6,12 @@ from rest_framework.response import Response
 from .models import Event, CalendarUrl
 from .serializers import CalendarUrlSerializer, EventListSerializer
 from .calendarscript import get_events
-from .googlecalendar import get_calendar_events, create_event, update_event
+from .googlecalendar import (
+    get_calendar_events,
+    create_event,
+    update_event,
+    delete_event,
+)
 
 
 class AddCalendar(APIView):
@@ -60,10 +65,10 @@ class EventDetail(APIView):
     def post(self, request, pk, format=None):
         credentials = request.session["credentials"]
         update_event(credentials, request.data, pk)
-        url = f"/events/{pk}/"
-        return HttpResponseRedirect(url)
+        return Response(status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, format=None):
-        event = self.get_object(pk)
-        event.delete()
+        credentials = request.session["credentials"]
+        delete_event(credentials, pk)
+        get_calendar_events(credentials)
         return Response(status=status.HTTP_204_NO_CONTENT)
