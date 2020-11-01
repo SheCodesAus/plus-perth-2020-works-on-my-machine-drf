@@ -15,7 +15,7 @@ import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -51,38 +51,38 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "mentors.apps.MentorsConfig",
     "events.apps.EventsConfig",
-    "oauth2_provider",
-    "social_django",
-    "rest_framework_social_oauth2",
+    # "oauth2_provider",
+    # "social_django",
+    # "rest_framework_social_oauth2",
 ]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "rest_framework_social_oauth2.authentication.SocialAuthentication",
+        # "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        # "rest_framework_social_oauth2.authentication.SocialAuthentication",
     ]
 }
 
 AUTHENTICATION_BACKENDS = (
-    "social_core.backends.google.GoogleOAuth2",
-    "rest_framework_social_oauth2.backends.DjangoOAuth2",
+    # "social_core.backends.google.GoogleOAuth2",
+    # "rest_framework_social_oauth2.backends.DjangoOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 )
 
 # Google configuration
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
-    "318837040339-9kf58f30ik0ifkv56u0n3khfmalog13k.apps.googleusercontent.com"
-)
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "q7kuF28-qWz6RIY5UQMkPoB_"
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = (
+#     "318837040339-9kf58f30ik0ifkv56u0n3khfmalog13k.apps.googleusercontent.com"
+# )
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "q7kuF28-qWz6RIY5UQMkPoB_"
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    "https://www.googleapis.com/auth/calendar",
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "https://www.googleapis.com/auth/calendar.readonly",
-    "openid",
-]
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+#     "https://www.googleapis.com/auth/calendar",
+#     "https://www.googleapis.com/auth/userinfo.email",
+#     "https://www.googleapis.com/auth/userinfo.profile",
+#     "https://www.googleapis.com/auth/calendar.readonly",
+#     "openid",
+# ]
 
 AUTH_USER_MODEL = "users.CustomUser"
 
@@ -111,8 +111,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
+                # "social_django.context_processors.backends",
+                # "social_django.context_processors.login_redirect",
             ],
         },
     },

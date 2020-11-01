@@ -1,4 +1,5 @@
 from django.http import Http404, HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 from rest_framework import status, permissions, generics
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -25,18 +26,21 @@ class AddCalendar(APIView):
 
 
 class EventList(APIView):
+    def test_api_request(self, request):
+        if "credentials" in self.request.session:
+            return self.request.session["credentials"]
+        else:
+            raise PermissionDenied
+
     def get(self, request):
+        # breakpoint()
+        credentials = self.test_api_request(request)
         events = Event.objects.all()
         serializer = EventListSerializer(events, many=True)
         return Response(serializer.data)
 
-    def test_api_request(self, request):
-        if "credentials" not in request.session:
-            return HttpResponseRedirect("/users/social-auth")
-
     def post(self, request, *args, **kwargs):
         credentials = request.session["credentials"]
-        # test_api_request(credentials)
         events = get_calendar_events(credentials)
         serializer = EventListSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

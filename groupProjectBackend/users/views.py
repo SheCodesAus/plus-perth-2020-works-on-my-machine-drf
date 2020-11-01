@@ -74,7 +74,6 @@ class SocialAuth(APIView):
 
 class SocialAuthSuccess(APIView):
     def get(self, request):
-        # request.session['state'] = state
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             "../client_secret.json",
             scopes=[
@@ -85,16 +84,11 @@ class SocialAuthSuccess(APIView):
                 "openid",
             ],
         )
-        # flow.redirect_uri = reverse('auth-success')
         flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
 
         authorization_response = request.get_full_path_info()
         flow.fetch_token(authorization_response=authorization_response)
 
-        # Store the credentials in the session.
-        # ACTION ITEM for developers:
-        #     Store user's access and refresh tokens in your data store if
-        #     incorporating this code into your real app.
         credentials = flow.credentials
         request.session["credentials"] = {
             "token": credentials.token,
