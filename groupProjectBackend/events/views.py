@@ -4,25 +4,14 @@ from rest_framework import status, permissions, generics
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Event, CalendarUrl
-from .serializers import CalendarUrlSerializer, EventListSerializer
-from .calendarscript import get_events
+from .models import Event
+from .serializers import EventListSerializer
 from .googlecalendar import (
     get_calendar_events,
     create_event,
     update_event,
     delete_event,
 )
-
-
-class AddCalendar(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = CalendarUrlSerializer(data=request.data)
-        if serializer.is_valid():
-            url, created = CalendarUrl.objects.get_or_create(
-                calendar_url=serializer.validated_data["calendar_url"]
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class EventList(APIView):
@@ -33,7 +22,7 @@ class EventList(APIView):
             raise PermissionDenied
 
     def get(self, request):
-        # breakpoint()
+        breakpoint()
         credentials = self.test_api_request(request)
         events = Event.objects.all()
         serializer = EventListSerializer(events, many=True)

@@ -1,7 +1,7 @@
 from googleapiclient.discovery import build
 import google.oauth2.credentials
 import datetime
-from .models import Event
+from .models import Event, Attendance
 from mentors.models import MentorProfile
 from users.models import CustomUser
 import re
@@ -28,14 +28,6 @@ def create_event_model(event):
     city = find_event_city(location)
     event_id = event.get("id")
     creator_email = event["creator"].get("email")
-    mentors = []
-
-    if "attendees" in event:
-        for mentor in event["attendees"]:
-            mentor_email = mentor.get("email")
-            mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
-            mentor_id = mentor_obj.pk
-            mentors.append(mentor_obj)
 
     event_model, created = Event.objects.update_or_create(
         id=event_id,
@@ -49,9 +41,28 @@ def create_event_model(event):
             "all_day": False,
         },
     )
-    event_model.mentor_list.set(mentors)
-    event_model.save()
-    return event_model
+
+    if "attendees" in event:
+        for mentor in event["attendees"]:
+            attendance_model = create_attendance_model(mentor, event_id)
+
+    return event_model, attendance_model
+
+
+def create_attendance_model(mentor, event_id):
+    event_obj = Event.objects.get(pk=event_id)
+    mentor_email = mentor.get("email")
+    mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
+    attendance = mentor.get("responseStatus")
+
+    # breakpoint()
+    attendance_model, created = Attendance.objects.update_or_create(
+        event=event_obj,
+        mentor=mentor_obj,
+        defaults={
+            "status": attendance,
+        },
+    )
 
 
 def get_calendar_events(credentials):
