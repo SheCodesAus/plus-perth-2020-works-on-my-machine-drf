@@ -5,8 +5,8 @@ from mentors.models import MentorProfile
 
 class AttendanceSerializer(serializers.Serializer):
     status = serializers.CharField(max_length=20)
-    event = serializers.CharField(max_length=200)
-    mentor = serializers.ReadOnlyField(source="mentor.id")
+    # event = serializers.CharField(max_length=200)
+    mentor = serializers.ReadOnlyField(source="mentor.mentor_name")
 
 
 class EventListSerializer(serializers.Serializer):
@@ -22,7 +22,7 @@ class EventListSerializer(serializers.Serializer):
     # mentor_list = serializers.SlugRelatedField(
     #     many=True, slug_field="mentor_name", queryset=MentorProfile.objects.all()
     # )
-    mentor_list = AttendanceSerializer(many=True)
+    attendance_set = AttendanceSerializer(many=True)
 
     # def delete(self, validated_data):
     #     return Event.objects.delete(**validated_data)

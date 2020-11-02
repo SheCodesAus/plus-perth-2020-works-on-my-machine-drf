@@ -44,9 +44,9 @@ def create_event_model(event):
 
     if "attendees" in event:
         for mentor in event["attendees"]:
-            attendance_model = create_attendance_model(mentor, event_id)
+            create_attendance_model(mentor, event_id)
 
-    return event_model, attendance_model
+    return event_model
 
 
 def create_attendance_model(mentor, event_id):
