@@ -153,6 +153,13 @@ def update_event(credentials, data, eventId):
             mentor_email = mentor_obj.mentor_email
             mentors.append({"email": mentor_email})
         event["attendees"] = mentors
+
+    # for mentor_status in data["attendance_set"]:
+    #     # breakpoint()
+    #     mentor_obj = MentorProfile.objects.get(mentor_name=mentor_status["mentor"])
+    #     mentor_email = mentor_obj.mentor_email
+    #     mentor_status["mentor"] = mentor_email
+
     updated_event = (
         calendar.events()
         .update(calendarId="primary", eventId=event["id"], body=event)

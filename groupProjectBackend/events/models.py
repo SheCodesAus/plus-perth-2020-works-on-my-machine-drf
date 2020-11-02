@@ -28,7 +28,9 @@ class Attendance(models.Model):
         T = "tentative", "Tentative"
         A = "accepted", "Accepted"
 
-    status = models.CharField(max_length=20, choices=Status.choices)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.N, null=True
+    )
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,

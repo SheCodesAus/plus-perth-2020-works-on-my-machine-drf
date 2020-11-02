@@ -19,9 +19,9 @@ class EventListSerializer(serializers.Serializer):
     event_end = serializers.DateTimeField()
     event_location = serializers.CharField(max_length=200)
     all_day = serializers.BooleanField()
-    # mentor_list = serializers.SlugRelatedField(
-    #     many=True, slug_field="mentor_name", queryset=MentorProfile.objects.all()
-    # )
+    mentor_list = serializers.SlugRelatedField(
+        many=True, slug_field="mentor_name", queryset=MentorProfile.objects.all()
+    )
     attendance_set = AttendanceSerializer(many=True)
 
     # def delete(self, validated_data):
