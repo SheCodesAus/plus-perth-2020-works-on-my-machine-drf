@@ -7,6 +7,9 @@ from .models import CustomUser
 from .serializers import CustomUserSerializer
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+from rest_framework_social_oauth2.views import ConvertTokenView
+from oauth2_provider.models import Application
+from rest_framework_social_oauth2.oauth2_grants import SocialTokenGrant
 
 
 class CustomUserList(APIView):
@@ -50,6 +53,7 @@ class CustomUserDetail(APIView):
 
 
 class SocialAuth(APIView):
+    # This will trigger google to ask the user to sign in with a google account
     def get(self, request):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             "../client_secret.json",
@@ -73,6 +77,7 @@ class SocialAuth(APIView):
 
 
 class SocialAuthSuccess(APIView):
+    # This is where the user actually signs in and grants google access to the scopes
     def get(self, request):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             "../client_secret.json",
@@ -89,6 +94,7 @@ class SocialAuthSuccess(APIView):
         authorization_response = request.get_full_path_info()
         flow.fetch_token(authorization_response=authorization_response)
 
+        # The token is generated and we save it to the users session for later use
         credentials = flow.credentials
         request.session["credentials"] = {
             "token": credentials.token,
@@ -98,5 +104,57 @@ class SocialAuthSuccess(APIView):
             "client_secret": credentials.client_secret,
             "scopes": credentials.scopes,
         }
-        print(request.session["credentials"])
-        return HttpResponseRedirect("/users")
+        # redirect to convert-token so that the google token can be used for django auth
+        return HttpResponseRedirect("/auth/convert-token")
+
+
+# class ConvertToken(ConvertTokenView):
+#     def post(self, request, *args, **kwargs):
+#         token = request.session["credentials"].get("token")
+
+#         data = {
+#             "grant_type": "convert_token",
+#             "client_id": Application.objects.get(pk=1).client_id,
+#             "client_secret": Application.objects.get(pk=1).client_secret,
+#             "backend": "google-oauth2",
+#             "token": token,
+#         }
+#         request.data.update(data)
+#         request.POST
+#         url, headers, body, status = self.create_token_response(request._request)
+
+#         return Response(data=json.loads(body), status=status)
+
+
+# class ConvertToken(SocialTokenGrant, APIView):
+#     def get(self, request, *args, **kwargs):
+
+#         token = request.session["credentials"].get("token")
+
+#         data = {
+#             "grant_type": "convert_token",
+#             "client_id": Application.objects.get(pk=1).client_id,
+#             "client_secret": Application.objects.get(pk=1).client_secret,
+#             "backend": "google-oauth2",
+#             "token": token,
+#         }
+#         request.data.update(data)
+#         request.POST
+#         response = super(ConvertToken, self)
+#         return Response(data=request.data, status=status.HTTP_201_CREATED)
+
+
+# class ConvertTokenView(APIView):
+#     def post(self, request):
+#         breakpoint()
+#         credentials = request.session["credentials"]
+#         data = {
+#             grant_type: "convert_token",
+#             client_id: Application.objects.get(pk=1).client_id,
+#             client_secret: Application.objects.get(pk=1).client_secret,
+#             backend: "google-oauth2",
+#             token: credentials.token,
+#         }
+#         request.data.body = data
+
+#         return Response(data=request.data, status=status.HTTP_201_CREATED)
