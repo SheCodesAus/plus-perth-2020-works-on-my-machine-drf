@@ -22,9 +22,8 @@ class EventList(APIView):
             raise PermissionDenied
 
     def get(self, request):
-        # breakpoint()
         credentials = self.test_api_request(request)
-        events = Event.objects.all()
+        events = get_calendar_events(credentials)
         serializer = EventListSerializer(events, many=True)
         return Response(serializer.data)
 
