@@ -4,12 +4,18 @@ from django.dispatch import receiver
 
 
 class MentorProfile(models.Model):
+    class MentorSkills(models.TextChoices):
+        LEAD = "Lead"
+        INDUSTRY = "Industry"
+        JUNIOR = "Junior"
+        VOLUNTEER = "Volunteer"
+
     mentor_name = models.CharField(max_length=200)
     mentor_email = models.CharField(max_length=200)
     phone_number = models.IntegerField()
     location = models.CharField(max_length=200)
     skills = models.CharField(max_length=200)
-    mentor_type = models.CharField(max_length=200)
+    mentor_type = models.CharField(max_length=15, choices=MentorSkills.choices)
     one_day_workshop = models.BooleanField()
 
 
