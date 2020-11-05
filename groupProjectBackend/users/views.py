@@ -1,15 +1,16 @@
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpRequest
 from django.urls import reverse
+from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser
-from .serializers import CustomUserSerializer
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-from rest_framework_social_oauth2.views import ConvertTokenView
-from oauth2_provider.models import Application
-from rest_framework_social_oauth2.oauth2_grants import SocialTokenGrant
+import google.oauth2.credentials
+from googleapiclient.discovery import build
+from .models import CustomUser
+from .serializers import CustomUserSerializer
+from .createuser import create_new_user
 
 
 class CustomUserList(APIView):
@@ -79,6 +80,7 @@ class SocialAuth(APIView):
 class SocialAuthSuccess(APIView):
     # This is where the user actually signs in and grants google access to the scopes
     def get(self, request):
+        print("request", request.headers)
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             "../client_secret.json",
             scopes=[
@@ -104,8 +106,11 @@ class SocialAuthSuccess(APIView):
             "client_secret": credentials.client_secret,
             "scopes": credentials.scopes,
         }
-        # redirect to convert-token so that the google token can be used for django auth
-        return HttpResponseRedirect("/auth/convert-token")
+        creds = request.session["credentials"]
+        user = create_new_user(self, creds)
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key})
 
 
 # class ConvertToken(ConvertTokenView):
