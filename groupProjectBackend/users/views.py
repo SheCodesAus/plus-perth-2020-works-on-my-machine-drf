@@ -1,12 +1,16 @@
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpRequest
 from django.urls import reverse
+from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser
-from .serializers import CustomUserSerializer
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+import google.oauth2.credentials
+from googleapiclient.discovery import build
+from .models import CustomUser
+from .serializers import CustomUserSerializer
+from .createuser import create_new_user
 
 
 class CustomUserList(APIView):
@@ -50,6 +54,7 @@ class CustomUserDetail(APIView):
 
 
 class SocialAuth(APIView):
+    # This will trigger google to ask the user to sign in with a google account
     def get(self, request):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             "../client_secret.json",
@@ -73,7 +78,9 @@ class SocialAuth(APIView):
 
 
 class SocialAuthSuccess(APIView):
+    # This is where the user actually signs in and grants google access to the scopes
     def get(self, request):
+        print("request", request.headers)
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             "../client_secret.json",
             scopes=[
@@ -89,6 +96,7 @@ class SocialAuthSuccess(APIView):
         authorization_response = request.get_full_path_info()
         flow.fetch_token(authorization_response=authorization_response)
 
+        # The token is generated and we save it to the users session for later use
         credentials = flow.credentials
         request.session["credentials"] = {
             "token": credentials.token,
@@ -98,5 +106,8 @@ class SocialAuthSuccess(APIView):
             "client_secret": credentials.client_secret,
             "scopes": credentials.scopes,
         }
-        print(request.session["credentials"])
-        return HttpResponseRedirect("/users")
+        creds = request.session["credentials"]
+        user = create_new_user(self, creds)
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key})
