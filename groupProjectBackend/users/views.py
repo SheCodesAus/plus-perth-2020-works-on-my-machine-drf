@@ -60,7 +60,7 @@ class SocialAuth(APIView):
             # Use this file for local testing
             # "../client_secret-dev.json",
             # Use this file for deploying to production
-            "..client_secret-production.json",
+            "../../client_secret-production.json",
             scopes=[
                 "https://www.googleapis.com/auth/calendar",
                 "https://www.googleapis.com/auth/userinfo.email",
@@ -95,7 +95,7 @@ class SocialAuthSuccess(APIView):
             # Use this file for local testing
             # "../client_secret-dev.json",
             # Use this file for deploying to production
-            "..client_secret-production.json",
+            "../../client_secret-production.json",
             scopes=[
                 "https://www.googleapis.com/auth/calendar",
                 "https://www.googleapis.com/auth/userinfo.email",
