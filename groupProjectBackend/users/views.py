@@ -6,11 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-import google.oauth2.credentials
 from googleapiclient.discovery import build
 from .models import CustomUser
 from .serializers import CustomUserSerializer
 from .createuser import create_new_user
+from .googleauthscript import set_flow_dev, set_flow_prod
 
 
 class CustomUserList(APIView):
@@ -56,26 +56,10 @@ class CustomUserDetail(APIView):
 class SocialAuth(APIView):
     # This will trigger google to ask the user to sign in with a google account
     def get(self, request):
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            # Use this file for local testing
-            # "../client_secret-dev.json",
-            # Use this file for deploying to production
-            "../../client_secret-production.json",
-            scopes=[
-                "https://www.googleapis.com/auth/calendar",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile",
-                "https://www.googleapis.com/auth/calendar.readonly",
-                "openid",
-            ],
-        )
-        # Use following redirect_uri for local testing
-        # flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
-
-        # Use following redirect-uri when deploying to production
-        flow.redirect_uri = (
-            "https://shecodes-portal-drf.herokuapp.com/users/social-auth-success"
-        )
+        # Use this function when testing locally
+        # flow = set_flow_dev()
+        # Use this function when deploying to production
+        flow = set_flow_prod()
 
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
@@ -90,27 +74,10 @@ class SocialAuth(APIView):
 class SocialAuthSuccess(APIView):
     # This is where the user actually signs in and grants google access to the scopes
     def get(self, request):
-        print("request", request.headers)
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            # Use this file for local testing
-            # "../client_secret-dev.json",
-            # Use this file for deploying to production
-            "../../client_secret-production.json",
-            scopes=[
-                "https://www.googleapis.com/auth/calendar",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile",
-                "https://www.googleapis.com/auth/calendar.readonly",
-                "openid",
-            ],
-        )
-        # Use following redirect_uri for local testing
-        # flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
-
-        # Use following redirect-uri when deploying to production
-        flow.redirect_uri = (
-            "https://shecodes-portal-drf.herokuapp.com/users/social-auth-success"
-        )
+        # Use this function when testing locally
+        # flow = set_flow_dev()
+        # Use this function when deploying to production
+        flow = set_flow_prod()
 
         authorization_response = request.get_full_path_info()
         flow.fetch_token(authorization_response=authorization_response)
