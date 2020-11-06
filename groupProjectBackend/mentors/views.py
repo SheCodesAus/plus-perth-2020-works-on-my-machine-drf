@@ -10,6 +10,7 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
     SAFE_METHODS,
 )
+from .mentor_data import create_new_mentor
 
 
 class MentorProcessDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -34,3 +35,9 @@ class MentorProfileList(generics.ListCreateAPIView):
     #    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = MentorProfile.objects.all()
     serializer_class = MentorProfileSerializer
+
+
+class MentorFileUpload(APIView):
+    def post(self, request):
+        mentors = create_new_mentor()
+        return Response(data=mentors, status=status.HTTP_201_CREATED)
