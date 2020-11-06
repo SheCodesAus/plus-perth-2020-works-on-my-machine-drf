@@ -57,7 +57,10 @@ class SocialAuth(APIView):
     # This will trigger google to ask the user to sign in with a google account
     def get(self, request):
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            "../client_secret.json",
+            # Use this file for local testing
+            # "../client_secret-dev.json",
+            # Use this file for deploying to production
+            "..client_secret-production.json",
             scopes=[
                 "https://www.googleapis.com/auth/calendar",
                 "https://www.googleapis.com/auth/userinfo.email",
@@ -66,7 +69,14 @@ class SocialAuth(APIView):
                 "openid",
             ],
         )
-        flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
+        # Use following redirect_uri for local testing
+        # flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
+
+        # Use following redirect-uri when deploying to production
+        flow.redirect_uri = (
+            "https://shecodes-portal-drf.herokuapp.com/users/social-auth-success"
+        )
+
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
             # re-prompting the user for permission. Recommended for web server apps.
@@ -82,7 +92,10 @@ class SocialAuthSuccess(APIView):
     def get(self, request):
         print("request", request.headers)
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            "../client_secret.json",
+            # Use this file for local testing
+            # "../client_secret-dev.json",
+            # Use this file for deploying to production
+            "..client_secret-production.json",
             scopes=[
                 "https://www.googleapis.com/auth/calendar",
                 "https://www.googleapis.com/auth/userinfo.email",
@@ -91,7 +104,13 @@ class SocialAuthSuccess(APIView):
                 "openid",
             ],
         )
-        flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
+        # Use following redirect_uri for local testing
+        # flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
+
+        # Use following redirect-uri when deploying to production
+        flow.redirect_uri = (
+            "https://shecodes-portal-drf.herokuapp.com/users/social-auth-success"
+        )
 
         authorization_response = request.get_full_path_info()
         flow.fetch_token(authorization_response=authorization_response)
