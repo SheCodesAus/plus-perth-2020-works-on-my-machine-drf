@@ -10,7 +10,7 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
     SAFE_METHODS,
 )
-from .mentor_data import create_new_mentor
+from .addmentorscript import create_new_mentor
 
 
 class MentorProcessDetail(generics.RetrieveUpdateDestroyAPIView):
