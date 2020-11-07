@@ -38,7 +38,7 @@ def set_flow_dev():
     return flow
 
 
-def set_flow_prod(uri):
+def set_flow_prod():
     # Use this for deploying to production
 
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
