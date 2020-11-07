@@ -45,6 +45,6 @@ def set_flow_prod(uri):
         client_config=client_config, scopes=scopes_list
     )
     flow.redirect_uri = (
-        "https://shecodes-portal-drf.herokuapp.com/users/social-auth-success"
+        "https://shecodes-portal-react.herokuapp.com/social-auth-success"
     )
     return flow
