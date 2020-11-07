@@ -34,7 +34,7 @@ def set_flow_dev():
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         client_config=client_config, scopes=scopes_list
     )
-    flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
+    flow.redirect_uri = "http://localhost:3000/social-auth-success"
 
     # Use this for deploying to production
     # flow = google_auth_oauthlib.flow.Flow.from_client_config(
@@ -53,6 +53,6 @@ def set_flow_prod():
         client_config=client_config, scopes=scopes_list
     )
     flow.redirect_uri = (
-        "https://shecodes-portal-drf.herokuapp.com/users/social-auth-success"
+        "https://shecodes-portal-react.herokuapp.com/social-auth-success"
     )
     return flow

@@ -59,7 +59,7 @@ class SocialAuth(APIView):
         # Use this function when testing locally
         # flow = set_flow_dev()
         # Use this function when deploying to production
-        flow = set_flow_prod()
+        flow = set_flow_dev()
 
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
@@ -68,7 +68,7 @@ class SocialAuth(APIView):
             # Enable incremental authorization. Recommended as a best practice.
             include_granted_scopes="true",
         )
-        return HttpResponseRedirect(authorization_url)
+        return Response(status=status.HTTP_200_OK)
 
 
 class SocialAuthSuccess(APIView):
@@ -77,7 +77,7 @@ class SocialAuthSuccess(APIView):
         # Use this function when testing locally
         # flow = set_flow_dev()
         # Use this function when deploying to production
-        flow = set_flow_prod()
+        flow = set_flow_dev()
 
         authorization_response = request.get_full_path_info()
         flow.fetch_token(authorization_response=authorization_response)
