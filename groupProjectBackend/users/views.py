@@ -1,12 +1,16 @@
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpRequest
 from django.urls import reverse
+from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser
-from .serializers import CustomUserSerializer
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
+from googleapiclient.discovery import build
+from .models import CustomUser
+from .serializers import CustomUserSerializer
+from .createuser import create_new_user
+from .googleauthscript import set_flow_dev, set_flow_prod
 
 
 class CustomUserList(APIView):
@@ -50,18 +54,13 @@ class CustomUserDetail(APIView):
 
 
 class SocialAuth(APIView):
+    # This will trigger google to ask the user to sign in with a google account
     def get(self, request):
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            "../client_secret.json",
-            scopes=[
-                "https://www.googleapis.com/auth/calendar",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile",
-                "https://www.googleapis.com/auth/calendar.readonly",
-                "openid",
-            ],
-        )
-        flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
+        # Use this function when testing locally
+        # flow = set_flow_dev()
+        # Use this function when deploying to production
+        flow = set_flow_prod()
+
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
             # re-prompting the user for permission. Recommended for web server apps.
@@ -73,22 +72,17 @@ class SocialAuth(APIView):
 
 
 class SocialAuthSuccess(APIView):
+    # This is where the user actually signs in and grants google access to the scopes
     def get(self, request):
-        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            "../client_secret.json",
-            scopes=[
-                "https://www.googleapis.com/auth/calendar",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile",
-                "https://www.googleapis.com/auth/calendar.readonly",
-                "openid",
-            ],
-        )
-        flow.redirect_uri = "http://localhost:8000/users/social-auth-success"
+        # Use this function when testing locally
+        # flow = set_flow_dev()
+        # Use this function when deploying to production
+        flow = set_flow_prod()
 
         authorization_response = request.get_full_path_info()
         flow.fetch_token(authorization_response=authorization_response)
 
+        # The token is generated and we save it to the users session for later use
         credentials = flow.credentials
         request.session["credentials"] = {
             "token": credentials.token,
@@ -98,5 +92,8 @@ class SocialAuthSuccess(APIView):
             "client_secret": credentials.client_secret,
             "scopes": credentials.scopes,
         }
-        print(request.session["credentials"])
-        return HttpResponseRedirect("/users")
+        creds = request.session["credentials"]
+        user = create_new_user(self, creds)
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key})

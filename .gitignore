@@ -3,6 +3,6 @@ __pycache__/
 *.sqlite3
 *.vscode
 staticfiles
-client_secret.json
+# client_secret.json
 pipfile
 pipfile.lock

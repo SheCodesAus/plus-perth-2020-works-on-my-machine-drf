@@ -16,10 +16,26 @@ class Event(models.Model):
     all_day = models.BooleanField(default=False)
     mentor_list = models.ManyToManyField(
         "mentors.MentorProfile",
-        related_name="event_attending",
-        related_query_name="mentor_attending",
+        through="Attendance",
+        through_fields=("event", "mentor"),
     )
 
 
-class CalendarUrl(models.Model):
-    calendar_url = models.URLField()
+class Attendance(models.Model):
+    class Status(models.TextChoices):
+        N = "needsAction", "Needs Action"
+        D = "declined", "Declined"
+        T = "tentative", "Tentative"
+        A = "accepted", "Accepted"
+
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.N, null=True
+    )
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+    )
+    mentor = models.ForeignKey(
+        "mentors.MentorProfile",
+        on_delete=models.CASCADE,
+    )
