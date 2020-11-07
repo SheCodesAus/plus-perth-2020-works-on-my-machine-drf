@@ -41,3 +41,27 @@ class MentorFileUpload(APIView):
     def post(self, request):
         mentors = create_new_mentor()
         return Response(data=mentors, status=status.HTTP_201_CREATED)
+
+
+class MentorTypeList(generics.ListAPIView):
+    serializer_class = MentorProfileSerializer
+
+    def get_queryset(self):
+        mentor_type = self.kwargs["slug"]
+        return MentorProfile.objects.filter(mentor_type=mentor_type)
+
+
+class SkillsMentorList(generics.ListAPIView):
+    serializer_class = MentorProfileSerializer
+
+    def get_queryset(self):
+        skills = self.kwargs["slug"]
+        return MentorProfile.objects.filter(skills=skills)
+
+
+class MentorLocationList(generics.ListAPIView):
+    serializer_class = MentorProfileSerializer
+
+    def get_queryset(self):
+        location = self.kwargs["slug"]
+        return MentorProfile.objects.filter(location=location)
