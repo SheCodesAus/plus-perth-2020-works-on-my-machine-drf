@@ -59,8 +59,7 @@ class SocialAuth(APIView):
         # Use this function when testing locally
         # flow = set_flow_dev()
         # Use this function when deploying to production
-        uri = "http://localhost:8000/users/social-auth-success"
-        flow = set_flow_dev(uri)
+        flow = set_flow_dev()
 
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
@@ -69,20 +68,24 @@ class SocialAuth(APIView):
             # Enable incremental authorization. Recommended as a best practice.
             include_granted_scopes="true",
         )
-        return Response(status=status.HTTP_200_OK)
+        return HttpResponseRedirect(authorization_url)
 
 
 class SocialAuthSuccess(APIView):
     # This is where the user actually signs in and grants google access to the scopes
-    def get(self, request):
+    def post(self, request):
         # Use this function when testing locally
         # flow = set_flow_dev()
         # Use this function when deploying to production
-        uri = "http://localhost:8000/social-auth-success"
         flow = set_flow_dev()
 
         authorization_response = request.get_full_path_info()
+
+        print(authorization_response)
+
         flow.fetch_token(authorization_response=authorization_response)
+
+        print(flow.credentials)
 
         # The token is generated and we save it to the users session for later use
         credentials = flow.credentials
