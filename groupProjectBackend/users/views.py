@@ -59,7 +59,8 @@ class SocialAuth(APIView):
         # Use this function when testing locally
         # flow = set_flow_dev()
         # Use this function when deploying to production
-        flow = set_flow_dev()
+        uri = "http://localhost:8000/users/social-auth-success"
+        flow = set_flow_dev(uri)
 
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
@@ -77,6 +78,7 @@ class SocialAuthSuccess(APIView):
         # Use this function when testing locally
         # flow = set_flow_dev()
         # Use this function when deploying to production
+        uri = "http://localhost:8000/social-auth-success"
         flow = set_flow_dev()
 
         authorization_response = request.get_full_path_info()

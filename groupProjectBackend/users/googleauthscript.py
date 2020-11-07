@@ -28,13 +28,13 @@ client_config = {
 }
 
 
-def set_flow_dev():
+def set_flow_dev(uri):
     # Use this for testing locally
 
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
         client_config=client_config, scopes=scopes_list
     )
-    flow.redirect_uri = "http://localhost:3000/social-auth-success"
+    flow.redirect_uri = uri
 
     # Use this for deploying to production
     # flow = google_auth_oauthlib.flow.Flow.from_client_config(
@@ -46,7 +46,7 @@ def set_flow_dev():
     return flow
 
 
-def set_flow_prod():
+def set_flow_prod(uri):
     # Use this for deploying to production
 
     flow = google_auth_oauthlib.flow.Flow.from_client_config(
