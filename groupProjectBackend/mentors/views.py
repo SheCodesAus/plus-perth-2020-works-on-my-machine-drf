@@ -39,5 +39,5 @@ class MentorProfileList(generics.ListCreateAPIView):
 
 class MentorFileUpload(APIView):
     def post(self, request):
-        mentors = create_new_mentor()
-        return Response(data=mentors, status=status.HTTP_201_CREATED)
+        mentors = create_new_mentor(request.data)
+        return Response(status=status.HTTP_201_CREATED)

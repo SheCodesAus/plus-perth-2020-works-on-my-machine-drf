@@ -85,20 +85,9 @@ class SocialAuthSuccess(APIView):
 
         flow.fetch_token(authorization_response=authorization_response)
 
-        print(flow.credentials)
-
         # The token is generated and we save it to the users session for later use
         credentials = flow.credentials
-        request.session["credentials"] = {
-            "token": credentials.token,
-            "refresh_token": credentials.refresh_token,
-            "token_uri": credentials.token_uri,
-            "client_id": credentials.client_id,
-            "client_secret": credentials.client_secret,
-            "scopes": credentials.scopes,
-        }
-        creds = request.session["credentials"]
-        user = create_new_user(self, creds)
-
+        user = create_new_user(self, credentials)
         token, created = Token.objects.get_or_create(user=user)
+
         return Response({"token": token.key})

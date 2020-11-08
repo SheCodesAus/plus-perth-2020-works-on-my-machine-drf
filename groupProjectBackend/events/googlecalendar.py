@@ -5,6 +5,7 @@ from .models import Event, Attendance
 from mentors.models import MentorProfile
 from users.models import CustomUser
 import re
+import json
 
 
 def find_event_city(location):
@@ -66,12 +67,14 @@ def create_attendance_model(mentor, event_id):
 
 
 def get_calendar_events(credentials):
-    credentials = google.oauth2.credentials.Credentials(**credentials)
+    creds = json.loads(credentials)
+    credentials = google.oauth2.credentials.Credentials(**creds)
 
     calendar = build("calendar", "v3", credentials=credentials)
-    now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
+    now = datetime.datetime.utcnow()
 
     print("Getting the upcoming 10 events")
+
     events_result = (
         calendar.events()
         .list(
@@ -79,7 +82,7 @@ def get_calendar_events(credentials):
             timeMin=now,
             maxResults=10,
             singleEvents=True,
-            orderBy="startTime",
+            # orderBy="startTime",
         )
         .execute()
     )
