@@ -1,6 +1,7 @@
 from googleapiclient.discovery import build
 import google.oauth2.credentials
 import datetime
+from django.utils import timezone
 from .models import Event, Attendance
 from mentors.models import MentorProfile
 from users.models import CustomUser
@@ -68,10 +69,16 @@ def create_attendance_model(mentor, event_id):
 
 def get_calendar_events(credentials):
     creds = json.loads(credentials)
+    creds["expiry"] = datetime.datetime.fromisoformat(
+        creds["expiry"].replace("Z", "+00:00")
+    )
+
     credentials = google.oauth2.credentials.Credentials(**creds)
 
     calendar = build("calendar", "v3", credentials=credentials)
-    now = datetime.datetime.utcnow()
+    # now = datetime.datetime.utcnow().tzinfo()
+    now = timezone.now()
+    test = calendar.events()
 
     print("Getting the upcoming 10 events")
 
@@ -82,7 +89,7 @@ def get_calendar_events(credentials):
             timeMin=now,
             maxResults=10,
             singleEvents=True,
-            # orderBy="startTime",
+            orderBy="startTime",
         )
         .execute()
     )
