@@ -113,44 +113,56 @@ def get_calendar_events(credentials):
     for event in events:
         if "She Codes" in event["summary"]:
             event_models.append(create_event_model(event))
+        else:
+            print("not she codes event")
 
     return event_models
 
 
 def create_event(credentials, data):
-    creds = google.oauth2.credentials.Credentials(**credentials)
+    creds_string = credentials
+    creds_json = json.loads(creds_string)
+    creds_obj = google.oauth2.credentials.Credentials.from_authorized_user_info(
+        creds_json
+    )
     mentors = []
 
-    for mentor in data["mentor_list"]:
-        try:
-            mentor_object = MentorProfile.objects.get(pk=mentor)
-        except MentorProfile.DoesNotExist:
-            mentor_object = None
-        if mentor_object is not None:
-            mentor_obj = MentorProfile.objects.get(pk=mentor)
-            mentor_email = mentor_obj.mentor_email
-            mentors.append({"email": mentor_email})
+    if len(data["mentor_list"]) > 0:
+        for mentor in data["mentor_list"]:
+            try:
+                mentor_object = MentorProfile.objects.get(pk=mentor)
+            except MentorProfile.DoesNotExist:
+                mentor_object = None
+            if mentor_object is not None:
+                mentor_obj = MentorProfile.objects.get(pk=mentor)
+                mentor_email = mentor_obj.mentor_email
+                mentors.append({"email": mentor_email})
+
+    start = datetime.datetime.strptime(data["event_start"], "%Y-%m-%dT%H:%M")
+    start_iso = start.isoformat() + "Z"
+    end = datetime.datetime.strptime(data["event_end"], "%Y-%m-%dT%H:%M")
+    end_iso = end.isoformat() + "Z"
 
     event = {
         "summary": data["event_name"],
-        "start": {"dateTime": data["event_start"], "timeZone": "Australia/Perth"},
-        "end": {"dateTime": data["event_end"], "timeZone": "Australia/Perth"},
+        "start": {"dateTime": start_iso, "timeZone": "Australia/Perth"},
+        "end": {"dateTime": end_iso, "timeZone": "Australia/Perth"},
         "location": data["event_location"],
         "attendees": mentors,
     }
 
-    calendar = build("calendar", "v3", credentials=creds)
+    calendar = build("calendar", "v3", credentials=creds_obj)
     event = (
         calendar.events()
         .insert(calendarId="primary", body=event, sendUpdates="all")
         .execute()
     )
-
-    return get_calendar_events(credentials)
+    return get_calendar_events(creds_string)
 
 
 def update_event(credentials, data, eventId):
-    credentials = google.oauth2.credentials.Credentials(**credentials)
+    creds = json.loads(credentials)
+    credentials = google.oauth2.credentials.Credentials.from_authorized_user_info(creds)
 
     calendar = build("calendar", "v3", credentials=credentials)
     event = calendar.events().get(calendarId="primary", eventId=eventId).execute()
@@ -194,8 +206,10 @@ def update_event(credentials, data, eventId):
 
 
 def delete_event(credentials, eventId):
-    creds = google.oauth2.credentials.Credentials(**credentials)
-    calendar = build("calendar", "v3", credentials=creds)
+    creds = json.loads(credentials)
+    credentials = google.oauth2.credentials.Credentials.from_authorized_user_info(creds)
+
+    calendar = build("calendar", "v3", credentials=credentials)
     calendar.events().delete(calendarId="primary", eventId=eventId).execute()
 
     return

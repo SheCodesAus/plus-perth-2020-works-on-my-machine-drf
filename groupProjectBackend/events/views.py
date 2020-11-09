@@ -41,9 +41,9 @@ class CreateEvent(APIView):
     def post(self, request):
         user = request.user
         credentials = user.credentials
-        print(request.data)
-        create_event(credentials, request.data)
-        return HttpResponseRedirect("/events")
+        events = create_event(credentials, request.data)
+        serializer = EventListSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class EventDetail(APIView):
