@@ -15,20 +15,23 @@ from .googlecalendar import (
 
 
 class EventList(APIView):
-    def test_api_request(self, request):
-        if "credentials" in self.request.session:
-            return self.request.session["credentials"]
+    def test_api_request(self, user):
+        if "credentials" in self.user:
+            return self.user
         else:
             raise PermissionDenied
 
     def get(self, request):
-        credentials = self.test_api_request(request)
+        user = request.user
+        # credentials = self.test_api_request(user)
+        credentials = user.credentials
         events = get_calendar_events(credentials)
         serializer = EventListSerializer(events, many=True)
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        credentials = request.session["credentials"]
+        user = request.user
+        credentials = user.credentials
         events = get_calendar_events(credentials)
         serializer = EventListSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -36,7 +39,8 @@ class EventList(APIView):
 
 class CreateEvent(APIView):
     def post(self, request):
-        credentials = request.session["credentials"]
+        user = request.user
+        credentials = user.credentials
         print(request.data)
         create_event(credentials, request.data)
         return HttpResponseRedirect("/events")
@@ -55,12 +59,14 @@ class EventDetail(APIView):
         return Response(serializer.data)
 
     def post(self, request, pk, format=None):
-        credentials = request.session["credentials"]
+        user = request.user
+        credentials = user.credentials
         update_event(credentials, request.data, pk)
         return Response(status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, format=None):
-        credentials = request.session["credentials"]
+        user = request.user
+        credentials = user.credentials
         delete_event(credentials, pk)
         get_calendar_events(credentials)
         return Response(status=status.HTTP_204_NO_CONTENT)
