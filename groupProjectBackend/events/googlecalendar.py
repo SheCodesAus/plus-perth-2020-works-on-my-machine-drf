@@ -22,10 +22,23 @@ def find_event_city(location):
         return None
 
 
+def find_event_type(name):
+    if "Plus" in name:
+        event_type = "Plus"
+    elif "Flash" in name:
+        event_type = "Flash"
+    elif "Workshop" in name:
+        event_type = "One Day Workshop"
+    else:
+        event_type = None
+    return event_type
+
+
 def create_event_model(event):
     start = event["start"].get("dateTime", event["start"].get("date"))
     end = event["end"].get("dateTime", event["end"].get("date"))
     name = event["summary"]
+    event_type = find_event_type(name)
     location = event.get("location")
     city = find_event_city(location)
     event_id = event.get("id")
@@ -38,6 +51,7 @@ def create_event_model(event):
             "event_start": start,
             "event_end": end,
             "event_name": name,
+            "event_type": event_type,
             "event_location": location,
             "event_city": city,
             "all_day": False,
@@ -47,54 +61,48 @@ def create_event_model(event):
     if "attendees" in event:
         for mentor in event["attendees"]:
             create_attendance_model(mentor, event_id)
-
     return event_model
 
 
 def create_attendance_model(mentor, event_id):
-    event_obj = Event.objects.get(pk=event_id)
     mentor_email = mentor.get("email")
-    mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
-    attendance = mentor.get("responseStatus")
+    try:
+        mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
+    except MentorProfile.DoesNotExist:
+        mentor_obj = None
+    if mentor_obj is not None:
+        event_obj = Event.objects.get(pk=event_id)
+        attendance = mentor.get("responseStatus")
 
-    # breakpoint()
-    attendance_model, created = Attendance.objects.update_or_create(
-        event=event_obj,
-        mentor=mentor_obj,
-        defaults={
-            "status": attendance,
-        },
-    )
+        attendance_model, created = Attendance.objects.update_or_create(
+            event=event_obj,
+            mentor=mentor_obj,
+            defaults={
+                "status": attendance,
+            },
+        )
 
 
 def get_calendar_events(credentials):
     creds = json.loads(credentials)
-    creds["expiry"] = datetime.datetime.fromisoformat(
-        creds["expiry"].replace("Z", "+00:00")
-    )
-
-    credentials = google.oauth2.credentials.Credentials(**creds)
-
+    credentials = google.oauth2.credentials.Credentials.from_authorized_user_info(creds)
     calendar = build("calendar", "v3", credentials=credentials)
-    # now = datetime.datetime.utcnow().tzinfo()
-    now = timezone.now()
-    test = calendar.events()
 
+    now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
     print("Getting the upcoming 10 events")
-
     events_result = (
         calendar.events()
         .list(
             calendarId="primary",
             timeMin=now,
-            maxResults=10,
+            maxResults=100,
             singleEvents=True,
             orderBy="startTime",
         )
         .execute()
     )
+
     events = events_result.get("items", [])
-    print(events)
     event_list = []
 
     if not events:
@@ -103,7 +111,8 @@ def get_calendar_events(credentials):
 
     event_models = []
     for event in events:
-        event_models.append(create_event_model(event))
+        if "She Codes" in event["summary"]:
+            event_models.append(create_event_model(event))
 
     return event_models
 
@@ -113,9 +122,14 @@ def create_event(credentials, data):
     mentors = []
 
     for mentor in data["mentor_list"]:
-        mentor_obj = MentorProfile.objects.get(pk=mentor)
-        mentor_email = mentor_obj.mentor_email
-        mentors.append({"email": mentor_email})
+        try:
+            mentor_object = MentorProfile.objects.get(pk=mentor)
+        except MentorProfile.DoesNotExist:
+            mentor_object = None
+        if mentor_object is not None:
+            mentor_obj = MentorProfile.objects.get(pk=mentor)
+            mentor_email = mentor_obj.mentor_email
+            mentors.append({"email": mentor_email})
 
     event = {
         "summary": data["event_name"],
