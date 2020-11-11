@@ -6,6 +6,7 @@ urlpatterns = [
     path("events/", views.EventList.as_view()),
     path("events/<str:pk>/", views.EventDetail.as_view()),
     path("create-event/", views.CreateEvent.as_view()),
+    path("invitations/<str:pk>/", views.EventInvitationsList.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
