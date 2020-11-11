@@ -60,7 +60,7 @@ class MentorTypeList(generics.ListAPIView):
         return MentorProfile.objects.filter(mentor_type=mentor_type)
 
 
-class SkillsMentorList(generics.ListAPIView):
+class MentorSkillsList(generics.ListAPIView):
     serializer_class = MentorProfileSerializer
 
     def get_queryset(self):
