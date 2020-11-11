@@ -57,9 +57,9 @@ class SocialAuth(APIView):
     # This will trigger google to ask the user to sign in with a google account
     def get(self, request):
         # Use this function when testing locally
-        # flow = set_flow_dev()
+        flow = set_flow_dev()
         # Use this function when deploying to production
-        flow = set_flow_prod()
+        # flow = set_flow_prod()
 
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
@@ -73,27 +73,21 @@ class SocialAuth(APIView):
 
 class SocialAuthSuccess(APIView):
     # This is where the user actually signs in and grants google access to the scopes
-    def get(self, request):
+    def post(self, request):
         # Use this function when testing locally
-        # flow = set_flow_dev()
+        flow = set_flow_dev()
         # Use this function when deploying to production
-        flow = set_flow_prod()
+        # flow = set_flow_prod()
 
         authorization_response = request.get_full_path_info()
+
+        print(authorization_response)
+
         flow.fetch_token(authorization_response=authorization_response)
 
         # The token is generated and we save it to the users session for later use
         credentials = flow.credentials
-        request.session["credentials"] = {
-            "token": credentials.token,
-            "refresh_token": credentials.refresh_token,
-            "token_uri": credentials.token_uri,
-            "client_id": credentials.client_id,
-            "client_secret": credentials.client_secret,
-            "scopes": credentials.scopes,
-        }
-        creds = request.session["credentials"]
-        user = create_new_user(self, creds)
-
+        user = create_new_user(self, credentials)
         token, created = Token.objects.get_or_create(user=user)
+
         return Response({"token": token.key})
