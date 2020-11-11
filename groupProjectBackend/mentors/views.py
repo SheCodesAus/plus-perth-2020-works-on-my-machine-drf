@@ -7,37 +7,82 @@ from django.http import Http404
 from rest_framework import status, generics, permissions
 from rest_framework.permissions import (
     BasePermission,
-    IsAuthenticatedOrReadOnly,
+    IsAuthenticated,
     SAFE_METHODS,
 )
 from .addmentorscript import create_new_mentor
 
 
 class MentorProcessDetail(generics.RetrieveUpdateDestroyAPIView):
-    #   permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     queryset = MentorProcess.objects.all()
     serializer_class = MentorProcessSerializer
 
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return MentorProcessSerializer
+        return MentorProcessStaffSerializer
 
 class MentorProcessList(generics.ListAPIView):
-    #    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     queryset = MentorProcess.objects.all()
     serializer_class = MentorProcessSerializer
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return MentorProcessSerializer
+        return MentorProcessStaffSerializer
 
 
 class MentorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    #   permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     queryset = MentorProfile.objects.all()
     serializer_class = MentorProfileSerializer
 
 
 class MentorProfileList(generics.ListCreateAPIView):
-    #    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated]
     queryset = MentorProfile.objects.all()
     serializer_class = MentorProfileSerializer
 
 
 class MentorFileUpload(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
-        mentors = create_new_mentor(request.data)
-        return Response(status=status.HTTP_201_CREATED)
+        mentors = create_new_mentor()
+        return Response(data=mentors, status=status.HTTP_201_CREATED)
+
+
+class MentorTypeList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MentorProfileSerializer
+
+    def get_queryset(self):
+        mentor_type = self.kwargs["slug"]
+        return MentorProfile.objects.filter(mentor_type=mentor_type)
+
+
+class MentorSkillsList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MentorProfileSerializer
+
+    def get_queryset(self):
+        skills = self.kwargs["slug"]
+        return MentorProfile.objects.filter(skills=skills)
+
+
+class MentorLocationList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MentorProfileSerializer
+
+    def get_queryset(self):
+        location = self.kwargs["slug"]
+        return MentorProfile.objects.filter(location=location)
+
+class MentorTypeList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MentorProfileSerializer
+
+    def get_queryset(self):
+        MentorType = self.kwargs["slug"]
+        return MentorProfile.objects.filter(MentorType=MentorType)
