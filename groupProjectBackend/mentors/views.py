@@ -47,12 +47,14 @@ class MentorProfileList(generics.ListCreateAPIView):
 
 
 class MentorFileUpload(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         mentors = create_new_mentor()
         return Response(data=mentors, status=status.HTTP_201_CREATED)
 
 
 class MentorTypeList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = MentorProfileSerializer
 
     def get_queryset(self):
@@ -61,6 +63,7 @@ class MentorTypeList(generics.ListAPIView):
 
 
 class MentorSkillsList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = MentorProfileSerializer
 
     def get_queryset(self):
@@ -69,6 +72,7 @@ class MentorSkillsList(generics.ListAPIView):
 
 
 class MentorLocationList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = MentorProfileSerializer
 
     def get_queryset(self):
