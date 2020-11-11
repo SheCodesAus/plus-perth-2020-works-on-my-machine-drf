@@ -1,0 +1,26 @@
+{
+	"name": "kate",
+	"password": "kate",
+	"username": "kate",
+	"email": "kate0@gmail.com",
+	"user_type": "admin"
+}
+
+{
+	"name": "holly",
+	"password": "holly",
+	"username": "holly",
+	"email": "holly@gmail.com",
+	"user_type": "staff"
+}
+
+
+{
+	"mentor_name": "megan",
+	"mentor_email": "megan@hotmail.com",
+	"phone_number": "0400989989",
+	"location": "perth",
+	"skills": "none",
+	"mentor_type": "extra",
+	"one_day_workshop": "false"
+}

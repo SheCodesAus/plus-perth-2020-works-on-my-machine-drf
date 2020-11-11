@@ -120,3 +120,51 @@ class MentorProcessSerializer(serializers.ModelSerializer):
 
     def delete(self, validated_data):
         return MentorProcess.objects.delete(**validated_data)
+
+class MentorProcessStaffSerializer(serializers.ModelSerializer):
+    mentor = MentorProfileSerializer(read_only=True)
+
+    class Meta:
+        model = MentorProcess
+        fields = [
+            "mentor",
+            "calendar_invites",
+            "calendar_invites_completed",
+            "onboarding",
+            "onboarding_completed",
+            "feedback",
+            "feedback_completed",
+            "offboarding",
+            "offboarding_completed",
+        ]
+        read_only_fields = [
+            "interview",
+            "interview_completed",
+            "offer_position",
+            "offer_position_completed",
+            "send_contract",
+            "send_contract_completed",
+            "signed_contract",
+            "signed_contract_completed",]
+
+    def update(self, instance, validated_data):
+        instance.calendar_invites = validated_data.get(
+            "calendar_invites", instance.calendar_invites
+            )
+        instance.calendar_invites_completed = validated_data.get(
+            "calendar_invites_completed", instance.calendar_invites_completed
+            )
+        instance.onboarding = validated_data.get("onboarding", instance.onboarding)
+        instance.onboarding_completed = validated_data.get(
+            "onboarding_completed", instance.onboarding_completed
+            )
+        instance.feedback = validated_data.get("feedback", instance.feedback)
+        instance.feedback_completed = validated_data.get(
+            "feedback_completed", instance.feedback_completed
+            )
+        instance.offboarding = validated_data.get("offboarding", instance.offboarding)
+        instance.offboarding_completed = validated_data.get(
+            "offboarding_completed", instance.offboarding_completed
+            )
+        instance.save()
+        return instance
