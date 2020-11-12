@@ -65,9 +65,9 @@ def create_event_model(event):
 
 
 def create_attendance_model(mentor, event_id):
-    mentor_email = mentor.get("email")
+    email = mentor.get("email")
     try:
-        mentor_obj = MentorProfile.objects.get(mentor_email=mentor_email)
+        mentor_obj = MentorProfile.objects.get(mentor_email=email)
     except MentorProfile.DoesNotExist:
         mentor_obj = None
     if mentor_obj is not None:
@@ -120,6 +120,7 @@ def get_calendar_events(credentials):
 
 
 def create_event(credentials, data):
+    print(data)
     creds_string = credentials
     creds_json = json.loads(creds_string)
     creds_obj = google.oauth2.credentials.Credentials.from_authorized_user_info(
@@ -130,11 +131,11 @@ def create_event(credentials, data):
     if len(data["mentor_list"]) > 0:
         for mentor in data["mentor_list"]:
             try:
-                mentor_object = MentorProfile.objects.get(pk=mentor)
+                mentor_object = MentorProfile.objects.get(mentor_name=mentor)
             except MentorProfile.DoesNotExist:
                 mentor_object = None
             if mentor_object is not None:
-                mentor_obj = MentorProfile.objects.get(pk=mentor)
+                mentor_obj = MentorProfile.objects.get(mentor_name=mentor)
                 mentor_email = mentor_obj.mentor_email
                 mentors.append({"email": mentor_email})
 
@@ -150,7 +151,7 @@ def create_event(credentials, data):
         "location": data["event_location"],
         "attendees": mentors,
     }
-
+    print(event)
     calendar = build("calendar", "v3", credentials=creds_obj)
     event = (
         calendar.events()
