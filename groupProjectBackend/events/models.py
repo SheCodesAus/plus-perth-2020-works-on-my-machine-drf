@@ -38,4 +38,5 @@ class Attendance(models.Model):
     mentor = models.ForeignKey(
         "mentors.MentorProfile",
         on_delete=models.CASCADE,
+        related_name='events'
     )
