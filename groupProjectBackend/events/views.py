@@ -13,6 +13,8 @@ from .googlecalendar import (
     delete_event,
 )
 
+from mentors.models import MentorProfile
+
 
 class EventList(APIView):
     def test_api_request(self, user):
@@ -70,3 +72,12 @@ class EventDetail(APIView):
         delete_event(credentials, pk)
         get_calendar_events(credentials)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+#fetch all events that a mentor is invited to
+class EventInvitationsList(generics.ListAPIView):
+    serializer_class = EventListSerializer
+
+    def get_queryset(self):
+        mentor = self.kwargs["pk"]
+        profile = MentorProfile.objects.get(pk=mentor)
+        return profile.event_set.all()
