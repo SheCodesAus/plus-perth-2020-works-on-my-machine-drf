@@ -6,3 +6,8 @@ staticfiles
 # client_secret.json
 pipfile
 pipfile.lock
+groupProjectBackend/events/migrations/0001_initial.py
+groupProjectBackend/events/migrations/0002_auto_20201109_0219.py
+groupProjectBackend/events/migrations/0002_auto_20201111_1838.py
+groupProjectBackend/mentors/migrations/0001_initial.py
+groupProjectBackend/users/migrations/0001_initial.py

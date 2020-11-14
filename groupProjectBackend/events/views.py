@@ -80,4 +80,4 @@ class EventInvitationsList(generics.ListAPIView):
     def get_queryset(self):
         mentor = self.kwargs["pk"]
         profile = MentorProfile.objects.get(pk=mentor)
-        return profile.events.all()
+        return profile.event_set.all()
