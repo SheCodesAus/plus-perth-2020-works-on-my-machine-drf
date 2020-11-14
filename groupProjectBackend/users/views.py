@@ -57,9 +57,9 @@ class SocialAuth(APIView):
     # This will trigger google to ask the user to sign in with a google account
     def get(self, request):
         # Use this function when testing locally
-        # flow = set_flow_dev()
+        flow = set_flow_dev()
         # Use this function when deploying to production
-        flow = set_flow_prod()
+        # flow = set_flow_prod()
 
         authorization_url, state = flow.authorization_url(
             # Enable offline access so that you can refresh an access token without
@@ -75,9 +75,9 @@ class SocialAuthSuccess(APIView):
     # This is where the user actually signs in and grants google access to the scopes
     def post(self, request):
         # Use this function when testing locally
-        # flow = set_flow_dev()
+        flow = set_flow_dev()
         # Use this function when deploying to production
-        flow = set_flow_prod()
+        # flow = set_flow_prod()
 
         authorization_response = request.get_full_path_info()
 
