@@ -1,7 +1,7 @@
 from googleapiclient.discovery import build
 import google.oauth2.credentials
 import datetime
-from django.utils import timezone
+from dateutil.relativedelta import *
 from .models import Event, Attendance
 from mentors.models import MentorProfile
 from users.models import CustomUser
@@ -88,13 +88,18 @@ def get_calendar_events(credentials):
     credentials = google.oauth2.credentials.Credentials.from_authorized_user_info(creds)
     calendar = build("calendar", "v3", credentials=credentials)
 
-    now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
+    # Get current datetime
+    now = datetime.datetime.utcnow()
+    # Change date to be 3 months in the past so old events are fetched
+    startDate = now + relativedelta(months=-3)
+    # Convert to correct format
+    startDate = startDate.isoformat() + "Z" # 'Z' indicates UTC time
     print("Getting the upcoming 10 events")
     events_result = (
         calendar.events()
         .list(
             calendarId="primary",
-            timeMin=now,
+            timeMin=startDate,
             maxResults=100,
             singleEvents=True,
             orderBy="startTime",

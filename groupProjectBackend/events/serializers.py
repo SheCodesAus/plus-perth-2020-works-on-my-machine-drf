@@ -20,7 +20,7 @@ class EventListSerializer(serializers.Serializer):
     event_location = serializers.CharField(max_length=200)
     all_day = serializers.BooleanField()
     mentor_list = serializers.SlugRelatedField(
-        many=True, slug_field="id", queryset=MentorProfile.objects.all()
+        many=True, slug_field="mentor_name", queryset=MentorProfile.objects.all()
     )
     attendance_set = AttendanceSerializer(many=True)
 
