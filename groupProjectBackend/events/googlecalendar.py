@@ -1,6 +1,6 @@
 from googleapiclient.discovery import build
 import google.oauth2.credentials
-import datetime
+from datetime import datetime, timezone
 from dateutil.relativedelta import *
 from .models import Event, Attendance
 from mentors.models import MentorProfile
@@ -89,11 +89,11 @@ def get_calendar_events(credentials):
     calendar = build("calendar", "v3", credentials=credentials)
 
     # Get current datetime
-    now = datetime.datetime.utcnow()
+    now = datetime.utcnow()
     # Change date to be 3 months in the past so old events are fetched
     startDate = now + relativedelta(months=-3)
     # Convert to correct format
-    startDate = startDate.isoformat() + "Z" # 'Z' indicates UTC time
+    startDate = startDate.isoformat() + "Z"  # 'Z' indicates UTC time
     print("Getting the upcoming 10 events")
     events_result = (
         calendar.events()
@@ -125,9 +125,8 @@ def get_calendar_events(credentials):
 
 
 def create_event(credentials, data):
-    print(data)
     creds_string = credentials
-    creds_json = json.loads(creds_string)
+    creds_json = json.loads(credentials)
     creds_obj = google.oauth2.credentials.Credentials.from_authorized_user_info(
         creds_json
     )
@@ -144,10 +143,10 @@ def create_event(credentials, data):
                 mentor_email = mentor_obj.mentor_email
                 mentors.append({"email": mentor_email})
 
-    start = datetime.datetime.strptime(data["event_start"], "%Y-%m-%dT%H:%M")
-    start_iso = start.isoformat() + "Z"
-    end = datetime.datetime.strptime(data["event_end"], "%Y-%m-%dT%H:%M")
-    end_iso = end.isoformat() + "Z"
+    start = datetime.strptime(data["event_start"], "%Y-%m-%dT%H:%M")
+    start_iso = start.isoformat()
+    end = datetime.strptime(data["event_end"], "%Y-%m-%dT%H:%M")
+    end_iso = end.isoformat()
 
     event = {
         "summary": data["event_name"],
@@ -167,23 +166,31 @@ def create_event(credentials, data):
 
 
 def update_event(credentials, data, eventId):
-    creds = json.loads(credentials)
-    credentials = google.oauth2.credentials.Credentials.from_authorized_user_info(creds)
+    creds_json = json.loads(credentials)
+    creds_obj = google.oauth2.credentials.Credentials.from_authorized_user_info(
+        creds_json
+    )
 
-    calendar = build("calendar", "v3", credentials=credentials)
+    calendar = build("calendar", "v3", credentials=creds_obj)
     event = calendar.events().get(calendarId="primary", eventId=eventId).execute()
 
     if "event_name" in data:
         event["summary"] = data["event_name"]
 
     if "event_start" in data:
+        start = data["event_start"]
+        start = datetime.strptime(start, "%Y-%m-%dT%H:%M")
+        start_iso = start.isoformat()
         event["start"] = {
-            "dateTime": data["event_start"],
+            "dateTime": start_iso,
             "timeZone": "Australia/Perth",
         }
 
     if "event_end" in data:
-        event["end"] = {"dateTime": data["event_end"], "timeZone": "Australia/Perth"}
+        end = data["event_end"]
+        end = datetime.strptime(end, "%Y-%m-%dT%H:%M")
+        end_iso = end.isoformat()
+        event["end"] = {"dateTime": end_iso, "timeZone": "Australia/Perth"}
 
     if "event_location" in data:
         event["location"] = data["event_location"]
@@ -191,16 +198,10 @@ def update_event(credentials, data, eventId):
     if "mentor_list" in data:
         mentors = []
         for mentor in data["mentor_list"]:
-            mentor_obj = MentorProfile.objects.get(pk=mentor)
+            mentor_obj = MentorProfile.objects.get(mentor_name=mentor)
             mentor_email = mentor_obj.mentor_email
             mentors.append({"email": mentor_email})
         event["attendees"] = mentors
-
-    # for mentor_status in data["attendance_set"]:
-    #     # breakpoint()
-    #     mentor_obj = MentorProfile.objects.get(mentor_name=mentor_status["mentor"])
-    #     mentor_email = mentor_obj.mentor_email
-    #     mentor_status["mentor"] = mentor_email
 
     updated_event = (
         calendar.events()

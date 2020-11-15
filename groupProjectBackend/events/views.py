@@ -63,8 +63,9 @@ class EventDetail(APIView):
     def post(self, request, pk, format=None):
         user = request.user
         credentials = user.credentials
-        update_event(credentials, request.data, pk)
-        return Response(status=status.HTTP_201_CREATED)
+        updated_event = update_event(credentials, request.data, pk)
+        serializer = EventListSerializer(updated_event)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk, format=None):
         user = request.user
@@ -73,7 +74,8 @@ class EventDetail(APIView):
         get_calendar_events(credentials)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#fetch all events that a mentor is invited to
+
+# fetch all events that a mentor is invited to
 class EventInvitationsList(generics.ListAPIView):
     serializer_class = EventListSerializer
 
