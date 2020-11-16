@@ -28,7 +28,7 @@ def find_event_type(name):
     elif "Flash" in name:
         event_type = "Flash"
     elif "Workshop" in name:
-        event_type = "One Day Workshop"
+        event_type = "Workshop"
     else:
         event_type = None
     return event_type
