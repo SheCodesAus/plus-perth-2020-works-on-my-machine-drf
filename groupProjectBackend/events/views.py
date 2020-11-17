@@ -12,8 +12,10 @@ from .googlecalendar import (
     update_event,
     delete_event,
 )
-
+import logging
 from mentors.models import MentorProfile
+
+logger = logging.getLogger(__name__)
 
 
 class EventList(APIView):
@@ -23,10 +25,16 @@ class EventList(APIView):
         else:
             raise PermissionDenied
 
+    # def my_view(request, arg1, arg):
+    # ...
+    # if bad_mojo:
+    #     # Log an error message
+    #     logger.error('Something went wrong!')
+
     def get(self, request):
         user = request.user
-        # credentials = self.test_api_request(user)
         credentials = user.credentials
+        logger.info(credentials)
         events = get_calendar_events(credentials)
         serializer = EventListSerializer(events, many=True)
         return Response(serializer.data)
