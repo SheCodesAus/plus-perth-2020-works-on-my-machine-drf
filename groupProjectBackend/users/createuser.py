@@ -4,13 +4,8 @@ from users.models import CustomUser
 from googleapiclient.discovery import build
 from django.contrib.auth.models import BaseUserManager
 
-import logging
-
-logger = logging.getLogger("django.server")
-
 
 def create_new_user(self, creds):
-    logger.info("creds json", creds)
     creds_dict = {
         "token": creds.token,
         "refresh_token": creds.refresh_token,
@@ -20,7 +15,6 @@ def create_new_user(self, creds):
         "scopes": creds.scopes,
     }
     credentials = google.oauth2.credentials.Credentials(**creds_dict)
-    logger.info("creds dictionary", creds_dict)
     profile = build("oauth2", "v2", credentials=credentials)
     creds = creds.to_json()
     user_info = profile.userinfo().get().execute()
@@ -43,6 +37,4 @@ def create_new_user(self, creds):
             "credentials": creds,
         },
     )
-
-    logger.info(user.credentials)
     return user

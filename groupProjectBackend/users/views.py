@@ -11,9 +11,6 @@ from .models import CustomUser
 from .serializers import CustomUserSerializer
 from .createuser import create_new_user
 from .googleauthscript import set_flow_dev, set_flow_prod
-import logging
-
-logger = logging.getLogger("django.server")
 
 
 class CustomUserList(APIView):
@@ -90,7 +87,6 @@ class SocialAuthSuccess(APIView):
 
         # The token is generated and we save it to the users session for later use
         credentials = flow.credentials
-        logger.info("creds from google", credentials)
         user = create_new_user(self, credentials)
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key})
