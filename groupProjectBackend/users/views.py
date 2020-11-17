@@ -12,10 +12,6 @@ from .serializers import CustomUserSerializer
 from .createuser import create_new_user
 from .googleauthscript import set_flow_dev, set_flow_prod
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 class CustomUserList(APIView):
     def get(self, request):
@@ -93,7 +89,4 @@ class SocialAuthSuccess(APIView):
         credentials = flow.credentials
         user = create_new_user(self, credentials)
         token, created = Token.objects.get_or_create(user=user)
-        user = request.user
-        creds = user.credentials
-        logger.info(creds)
         return Response({"token": token.key})

@@ -4,6 +4,10 @@ from users.models import CustomUser
 from googleapiclient.discovery import build
 from django.contrib.auth.models import BaseUserManager
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def create_new_user(self, creds):
     creds_dict = {
@@ -37,4 +41,6 @@ def create_new_user(self, creds):
             "credentials": creds,
         },
     )
+
+    logger.info(user.credentials)
     return user
