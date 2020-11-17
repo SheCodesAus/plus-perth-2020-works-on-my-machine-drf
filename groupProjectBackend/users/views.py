@@ -11,6 +11,7 @@ from .models import CustomUser
 from .serializers import CustomUserSerializer
 from .createuser import create_new_user
 from .googleauthscript import set_flow_dev, set_flow_prod
+import logging
 
 logger = logging.getLogger("django.server")
 
