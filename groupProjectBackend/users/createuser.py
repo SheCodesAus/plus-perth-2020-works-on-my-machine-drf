@@ -6,7 +6,7 @@ from django.contrib.auth.models import BaseUserManager
 
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django.server")
 
 
 def create_new_user(self, creds):
