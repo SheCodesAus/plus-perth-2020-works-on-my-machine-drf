@@ -7,6 +7,9 @@ from mentors.models import MentorProfile
 from users.models import CustomUser
 import re
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def find_event_city(location):
@@ -85,7 +88,9 @@ def create_attendance_model(mentor, event_id):
 
 def get_calendar_events(credentials):
     creds = json.loads(credentials)
+    logger.info(creds)
     credentials = google.oauth2.credentials.Credentials.from_authorized_user_info(creds)
+    logger.info(creds)
     calendar = build("calendar", "v3", credentials=credentials)
 
     # Get current datetime

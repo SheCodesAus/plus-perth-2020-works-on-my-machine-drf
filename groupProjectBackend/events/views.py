@@ -12,8 +12,9 @@ from .googlecalendar import (
     update_event,
     delete_event,
 )
-import logging
 from mentors.models import MentorProfile
+
+import logging
 
 logger = logging.getLogger(__name__)
 
